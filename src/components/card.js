@@ -5,7 +5,7 @@ export const getCard = (data, date) => `
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="/img/icons/${data.icon}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">Taxi to airport</h3>
+    <h3 class="event__title">${data.icon[0].toUpperCase() + data.icon.slice(1)} to airport</h3>
 
     <div class="event__schedule">
       <p class="event__time">
@@ -22,7 +22,7 @@ export const getCard = (data, date) => `
 
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-     ${getOptions(data.options, `short`)}
+     ${data.options ? getOptions(data.options, `short`) : ``}
     </ul>
 
     <button class="event__rollup-btn" type="button">

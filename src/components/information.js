@@ -1,7 +1,15 @@
-export const getInformation = () => `
-<div class="trip-info__main">
-  <h1 class="trip-info__title">Amsterdam &mdash; ... &mdash; Amsterdam</h1>
+const returnDate = (start, end) => {
+  const MONTHS = [`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`,
+    `September`, `October`, `November`, `December`];
+  return `${MONTHS[start.getMonth()]} ${start.getDate()}&nbsp;&mdash;&nbsp;${end.getDate()}`;
+};
 
-  <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;21</p>
-</div>
-`;
+export const getInformation = (points) => {
+  return `
+    <div class="trip-info__main">
+      <h1 class="trip-info__title">${points[0].city} &mdash; ... &mdash; ${points[points.length - 1].city}</h1>
+    
+      <p class="trip-info__dates">${returnDate(points[0].dueDate, points[points.length - 1].dueDate)}</p>
+    </div>
+  `;
+};

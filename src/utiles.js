@@ -26,3 +26,10 @@ export const getTime = (data) => {
     duration: `${duration.hours ? `${duration.hours}H` : ``} ${duration.minutes ? `${duration.minutes}M` : ``}`.trim(),
   };
 };
+
+export const getDate = (date) => {
+  return {
+    'start': `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
+    'end': `${date.getDate() + getRandomInt(0, 2)}/${date.getMonth()}/${date.getFullYear()}`,
+  };
+};

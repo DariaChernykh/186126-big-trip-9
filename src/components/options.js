@@ -3,9 +3,9 @@ export const getOptions = (options, mode) => {
     return options.reduce((acc, val) => {
       acc += `
       <li class="event__offer">
-        <span class="event__offer-title">${val[0]}</span>
+        <span class="event__offer-title">${val[1].name}</span>
         &plus;
-        &euro;&nbsp;<span class="event__offer-price">${val[1]}</span>
+        &euro;&nbsp;<span class="event__offer-price">${val[1].value}</span>
       </li>
     `;
       return acc;
@@ -14,11 +14,11 @@ export const getOptions = (options, mode) => {
     return options.reduce((acc, val) => {
       acc += `
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-        <label class="event__offer-label" for="event-offer-luggage-1">
-          <span class="event__offer-title">${val[0]}</span>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${val[0]}-1" type="checkbox" name="event-offer-${val[0]}" checked>
+        <label class="event__offer-label" for="event-offer-${val[0]}-1">
+          <span class="event__offer-title">${val[1].name}</span>
           &plus;
-          &euro;&nbsp;<span class="event__offer-price">${val[1]}</span>
+          &euro;&nbsp;<span class="event__offer-price">${val[1].value}</span>
         </label>
       </div>
     `;

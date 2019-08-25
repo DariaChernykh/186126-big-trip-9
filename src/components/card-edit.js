@@ -1,12 +1,9 @@
 import {getOptions} from "./options";
+import {getDate} from "../utiles";
 
-const getPhotos = (num) => {
-  let arr = [];
-  for (let photo = 0; photo < num; photo++) {
-    arr.push(`<img class="event__photo" src="img/photos/${Math.ceil(Math.random() * 5)}.jpg" alt="Event photo">`);
-  }
-  return arr.join(``);
-};
+const NUM_PHOTOS = 4;
+const createPhotoElements = (arr) => arr.reduce((acc, value) => acc + `<img class="event__photo" src="${value}" alt="Event photo">`, ``);
+
 export const getCardEdit = (data, date) => `
 <li class="trip-events__item">
   <form class="event  event--edit" action="#" method="post">
@@ -14,7 +11,7 @@ export const getCardEdit = (data, date) => `
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${data.icon}.png" alt="Event type icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -83,7 +80,7 @@ export const getCardEdit = (data, date) => `
         <label class="event__label  event__type-output" for="event-destination-1">
           Sightseeing at
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Saint Petersburg" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${data.city}" list="destination-list-1">
         <datalist id="destination-list-1">
           <option value="Amsterdam"></option>
           <option value="Geneva"></option>
@@ -95,12 +92,12 @@ export const getCardEdit = (data, date) => `
         <label class="visually-hidden" for="event-start-time-1">
           From
         </label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 12:25">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDate(data.dueDate).start} ${date.timeStart}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">
           To
         </label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 13:35">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDate(data.dueDate).end} ${date.timeEnd}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -133,7 +130,7 @@ export const getCardEdit = (data, date) => `
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
-          ${getOptions(data.options, `edit`)}
+          ${data.options ? getOptions(data.options, `edit`) : ``}
         </div>
       </section>
 
@@ -143,7 +140,7 @@ export const getCardEdit = (data, date) => `
 
         <div class="event__photos-container">
           <div class="event__photos-tape">
-            ${getPhotos(3)}
+            ${createPhotoElements(data.photos(NUM_PHOTOS))}
           </div>
         </div>
       </section>
