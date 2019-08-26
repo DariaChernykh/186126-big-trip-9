@@ -3,7 +3,7 @@ export const getCard = (data, date) => `
 <li class="trip-events__item">
   <div class="event">
     <div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src="/img/icons/${data.icon}.png" alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src="img/icons/${data.icon}.png" alt="Event type icon">
     </div>
     <h3 class="event__title">${data.icon[0].toUpperCase() + data.icon.slice(1)} to airport</h3>
 
