@@ -191,13 +191,13 @@ export default class CardEdit {
   }
 
   bind() {
-    this._element.querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, this._onEditButtonClick.bind(this));
+    this._element.querySelector(`form`)
+      .addEventListener(`submit`, this._onEditButtonClick.bind(this));
   }
 
   unbind() {
-    this._element.querySelector(`.event__rollup-btn`)
-      .removeEventListener(`click`, this._onEditButtonClick.bind(this));
+    this._element.querySelector(`form`)
+      .removeEventListener(`submit`, this._onEditButtonClick.bind(this));
   }
 
 }
