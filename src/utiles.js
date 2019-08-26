@@ -33,3 +33,9 @@ export const getDate = (date) => {
     'end': `${date.getDate() + getRandomInt(0, 2)}/${date.getMonth()}/${date.getFullYear()}`,
   };
 };
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+  return newElement.firstChild;
+};

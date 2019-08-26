@@ -2,12 +2,12 @@ import {getMenu} from "./components/menu";
 import {getFilters} from "./components/filters";
 import {getTripSort} from "./components/trip-sort";
 import {getDays} from "./components/days";
-import {getCardEdit} from "./components/card-edit";
 import {getInformation} from "./components/information";
 import {createContainer} from "./components/container";
 import {getTime} from "./utiles";
-import {getCards} from "./components/cards";
 import {getPoints} from "./components/points";
+import Card from "./components/card";
+import CardEdit from "./components/card-edit";
 
 const HEADER_INFO = document.querySelector(`.trip-info`);
 const HEADER_CONTROLS = document.querySelector(`.trip-controls`);
@@ -19,6 +19,27 @@ const calcPriceTrip = (arr) => arr.reduce((acc, value) => {
   acc += value.price;
   return acc;
 }, 0);
+
+const renderPoints = (arr, parent) => {
+  arr.forEach((value) => {
+    const cardComponent = new Card(value, getTime(value));
+    const cardEditComponent = new CardEdit(value, getTime(value));
+
+    cardComponent.onEdit(() => {
+      cardEditComponent.render();
+      parent.replaceChild(cardEditComponent.element, cardComponent.element);
+      cardComponent.unrender();
+    });
+
+    cardEditComponent.onEdit(() => {
+      cardComponent.render();
+      parent.replaceChild(cardComponent.element, cardEditComponent.element);
+      cardEditComponent.unrender();
+    });
+
+    parent.appendChild(cardComponent.render());
+  });
+};
 
 const renderContent = () => {
   const NUM_POINTS = 4;
@@ -38,9 +59,7 @@ const renderContent = () => {
   renderComponentsToEnd(getDays(NUM_DAYS, points[0].dueDate), DAYS_LIST);
   const EVENTS_LIST = document.querySelector(`.trip-events__list`);
 
-  const CARDS_ARRAY = getCards(points.slice(1, points.length));
-  renderComponentsToEnd(getCardEdit(points[0], getTime(points[0])), EVENTS_LIST);
-  renderComponentsToEnd(CARDS_ARRAY, EVENTS_LIST);
+  renderPoints(points, EVENTS_LIST);
 };
 
 renderContent();
