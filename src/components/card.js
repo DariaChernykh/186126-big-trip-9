@@ -1,16 +1,20 @@
 import {getOptions} from "./options";
-import {createElement} from "../utiles";
+import {createElement} from "../utils";
 
 export default class Card {
   constructor(data, date) {
-    this._icon = data.icon;
+    this._type = data.type.key;
+    this._typeName = data.type.name;
     this._start = date.timeStart;
     this._end = date.timeEnd;
+    this._startDatetime = date.startDatetime;
+    this._endDatetime = date.endDatetime;
     this._duration = date.duration;
     this._price = data.price;
     this._options = data.options;
     this._onEdit = null;
     this._element = null;
+    this._onEditHandler = this._onEditButtonClick.bind(this);
   }
 
   _onEditButtonClick() {
@@ -32,15 +36,15 @@ export default class Card {
       <li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${this._icon}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${this._typeName}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${this._icon.toUpperCase() + this._icon.slice(1)} to airport</h3>
+        <h3 class="event__title">${this._typeName.toUpperCase().slice(0, 1) + this._typeName.slice(1)} ${this._type === `activity` ? `in` : `to`} airport</h3>
     
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T10:30">${this._start}</time>
+            <time class="event__start-time" datetime="${this._startDatetime}">${this._start}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-18T11:00">${this._end}</time>
+            <time class="event__end-time" datetime="2${this._endDatetime}">${this._end}</time>
           </p>
           <p class="event__duration">${this._duration}</p>
         </div>
@@ -75,11 +79,11 @@ export default class Card {
 
   bind() {
     this._element.querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, this._onEditButtonClick.bind(this));
+      .addEventListener(`click`, this._onEditHandler);
   }
 
   unbind() {
     this._element.querySelector(`.event__rollup-btn`)
-      .removeEventListener(`click`, this._onEditButtonClick.bind(this));
+      .removeEventListener(`click`, this._onEditHandler);
   }
 }

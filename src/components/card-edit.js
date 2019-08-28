@@ -1,15 +1,24 @@
 import {getOptions} from "./options";
-import {createElement, getDate} from "../utiles";
+import {createElement, getDate} from "../utils";
 
 const NUM_PHOTOS = 4;
 const createPhotoElements = (arr) => arr.reduce((acc, value) => acc + `<img class="event__photo" src="${value}" alt="Event photo">`, ``);
+const createDestination = (arr) => arr.reduce((acc, value) => acc + `<option value="${value}"></option>`, ``);
+const createActivityChoice = (arr) => arr.reduce((acc, value) => acc + `<div class="event__type-item">
+                  <input id="event-type-${value}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${value}">
+                  <label class="event__type-label  event__type-label--${value}" for="event-type-${value}-1">${value.toUpperCase().slice(0, 1) + value.slice(1)}</label>
+                </div>`, ``);
 
 export default class CardEdit {
   constructor(data, date) {
-    this._icon = data.icon;
+    this._activity = data.activity;
+    this._transfer = data.transfer;
+    this._type = data.type.key;
+    this._typeName = data.type.name;
     this._start = date.timeStart;
     this._end = date.timeEnd;
     this._dueDate = data.dueDate;
+    this._cities = data.cities;
     this._city = data.city;
     this._price = data.price;
     this._options = data.options;
@@ -17,9 +26,10 @@ export default class CardEdit {
     this._description = data.description;
     this._onEdit = null;
     this._element = null;
+    this._onSubmitHandler = this._onSubmitButtonClick.bind(this);
   }
 
-  _onEditButtonClick() {
+  _onSubmitButtonClick() {
     if (typeof this._onEdit === `function`) {
       this._onEdit();
     }
@@ -40,80 +50,30 @@ export default class CardEdit {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${this._icon}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${this._typeName}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
     
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-    
-                <div class="event__type-item">
-                  <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                  <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                </div>
-    
-                <div class="event__type-item">
-                  <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                  <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                </div>
-    
-                <div class="event__type-item">
-                  <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                  <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                </div>
-    
-                <div class="event__type-item">
-                  <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                  <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                </div>
-    
-                <div class="event__type-item">
-                  <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                  <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-                </div>
-    
-                <div class="event__type-item">
-                  <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                  <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                </div>
-    
-                <div class="event__type-item">
-                  <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                  <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                </div>
+                ${createActivityChoice(this._transfer)}
               </fieldset>
     
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
-    
-                <div class="event__type-item">
-                  <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                  <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                </div>
-    
-                <div class="event__type-item">
-                  <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                  <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                </div>
-    
-                <div class="event__type-item">
-                  <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                  <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                </div>
+                ${createActivityChoice(this._activity)}
               </fieldset>
             </div>
           </div>
     
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              Sightseeing at
+                ${this._typeName.toUpperCase().slice(0, 1) + this._typeName.slice(1)} ${this._type === `activity` ? `in` : `to`}
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${createDestination(this._cities)}
             </datalist>
           </div>
     
@@ -192,12 +152,12 @@ export default class CardEdit {
 
   bind() {
     this._element.querySelector(`form`)
-      .addEventListener(`submit`, this._onEditButtonClick.bind(this));
+      .addEventListener(`submit`, this._onSubmitHandler);
   }
 
   unbind() {
     this._element.querySelector(`form`)
-      .removeEventListener(`submit`, this._onEditButtonClick.bind(this));
+      .removeEventListener(`submit`, this._onSubmitHandler);
   }
 
 }

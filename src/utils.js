@@ -20,10 +20,14 @@ export const getTime = (data) => {
   const duration = getDuration();
   const hours = data.dueDate.getHours();
   const minutes = data.dueDate.getMinutes();
+  const timeStart = `${hours}:${minutes}`;
+  const timeEnd = `${generateEndTime(hours, minutes, duration)}`;
   return {
-    timeStart: `${hours}:${minutes}`,
-    timeEnd: `${generateEndTime(hours, minutes, duration)}`,
+    timeStart,
+    timeEnd,
     duration: `${duration.hours ? `${duration.hours}H` : ``} ${duration.minutes ? `${duration.minutes}M` : ``}`.trim(),
+    startDatetime: `${data.dueDate.getFullYear()}-${data.dueDate.getMonth()}-${data.dueDate.getDate()}T${timeStart}`,
+    endDatetime: `${data.dueDate.getFullYear()}-${data.dueDate.getMonth()}-${data.dueDate.getDate()}T${timeEnd}`,
   };
 };
 

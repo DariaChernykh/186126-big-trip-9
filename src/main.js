@@ -4,7 +4,7 @@ import {getTripSort} from "./components/trip-sort";
 import {getDays} from "./components/days";
 import {getInformation} from "./components/information";
 import {createContainer} from "./components/container";
-import {getTime} from "./utiles";
+import {getTime} from "./utils";
 import {getPoints} from "./components/points";
 import Card from "./components/card";
 import CardEdit from "./components/card-edit";
