@@ -1,10 +1,21 @@
 const MS_IN_WEEK = 7 * 24 * 60 * 60 * 1000;
 export const getRandomInt = (min, max) => Math.floor(Math.random() * (max + 1 - min)) + min;
 
-const TYPES = [
-  `bus`, `check-in`, `drive`, `flight`, `restaurant`, `ship`, `sightseeing`,
-  `taxi`, `train`, `transport`, `trip`
-];
+const TYPES = {
+  'transfer': [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
+  'activity': [`restaurant`, `sightseeing`, `check-in`]
+};
+
+const getType = (types) => {
+  let keys = Object.keys(types);
+  let key = keys[getRandomInt(0, keys.length - 1)];
+  let name = types[key][getRandomInt(0, types[key].length - 1)];
+
+  return {
+    key,
+    name
+  };
+};
 
 const OPTIONS = {
   'luggage': {
@@ -81,7 +92,10 @@ const getPhotos = (number) => {
 export const getData = () => {
   const options = getRandomOptions(OPTIONS);
   return {
-    icon: TYPES[getRandomInt(0, TYPES.length - 1)],
+    activity: TYPES.activity,
+    transfer: TYPES.transfer,
+    type: getType(TYPES),
+    cities: CITIES,
     city: CITIES[getRandomInt(0, CITIES.length - 1)],
     photos: getPhotos,
     description: getDescription(DESCRIPTIONS),
