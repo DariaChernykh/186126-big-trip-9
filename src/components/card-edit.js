@@ -1,5 +1,6 @@
 import {getOptions} from "./options";
 import {createElement, getDate} from "../utils";
+import AbstractComponent from "./abstract-component";
 
 const NUM_PHOTOS = 4;
 const createPhotoElements = (arr) => arr.reduce((acc, value) => acc + `<img class="event__photo" src="${value}" alt="Event photo">`, ``);
@@ -9,8 +10,9 @@ const createActivityChoice = (arr) => arr.reduce((acc, value) => acc + `<div cla
                   <label class="event__type-label  event__type-label--${value}" for="event-type-${value}-1">${value.toUpperCase().slice(0, 1) + value.slice(1)}</label>
                 </div>`, ``);
 
-export default class CardEdit {
+export default class CardEdit extends AbstractComponent {
   constructor(data, date) {
+    super();
     this._activity = data.activity;
     this._transfer = data.transfer;
     this._type = data.type.key;
@@ -25,7 +27,6 @@ export default class CardEdit {
     this._photos = data.photos;
     this._description = data.description;
     this._onEdit = null;
-    this._element = null;
     this._onSubmitHandler = this._onSubmitButtonClick.bind(this);
   }
 
@@ -33,9 +34,6 @@ export default class CardEdit {
     if (typeof this._onEdit === `function`) {
       this._onEdit();
     }
-  }
-  get element() {
-    return this._element;
   }
 
   onEdit(fn) {

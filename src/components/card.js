@@ -1,8 +1,10 @@
 import {getOptions} from "./options";
 import {createElement} from "../utils";
+import AbstractComponent from "./abstract-component";
 
-export default class Card {
+export default class Card extends AbstractComponent {
   constructor(data, date) {
+    super();
     this._type = data.type.key;
     this._typeName = data.type.name;
     this._start = date.timeStart;
@@ -13,7 +15,6 @@ export default class Card {
     this._price = data.price;
     this._options = data.options;
     this._onEdit = null;
-    this._element = null;
     this._onEditHandler = this._onEditButtonClick.bind(this);
   }
 
@@ -21,10 +22,6 @@ export default class Card {
     if (typeof this._onEdit === `function`) {
       this._onEdit();
     }
-  }
-
-  get element() {
-    return this._element;
   }
 
   onEdit(fn) {
