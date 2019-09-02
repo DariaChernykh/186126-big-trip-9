@@ -1,33 +1,18 @@
 import {getRandomInt} from "./data";
-const getDuration = () => {
-  return {
-    hours: getRandomInt(0, 3),
-    minutes: getRandomInt(0, 59)
-  };
-};
-
-const generateEndTime = (hours, min, duration) => {
-  let endMinutes = min + duration.minutes;
-  let endHours = hours + duration.hours;
-  if (endMinutes > 59) {
-    endHours++;
-    endMinutes -= 60;
-  }
-  return `${endHours}:${endMinutes}`;
-};
+const MS_IN_HALF_DAY = 12 * 60 * 60 * 1000;
 
 export const getTime = (data) => {
-  const duration = getDuration();
-  const hours = data.dueDate.getHours();
-  const minutes = data.dueDate.getMinutes();
-  const timeStart = `${hours}:${minutes}`;
-  const timeEnd = `${generateEndTime(hours, minutes, duration)}`;
+  const endDate = new Date(getRandomInt(data.getTime(), data.getTime() + MS_IN_HALF_DAY));
+  const timeStart = `${data.getHours()}:${data.getMinutes()}`;
+  const timeEnd = `${endDate.getHours()}:${endDate.getMinutes()}`;
   return {
+    duration: endDate - data,
+    durationHours: Math.abs(endDate.getHours() - data.getHours()),
+    durationMinutes: Math.abs(endDate.getMinutes() - data.getMinutes()),
     timeStart,
     timeEnd,
-    duration: `${duration.hours ? `${duration.hours}H` : ``} ${duration.minutes ? `${duration.minutes}M` : ``}`.trim(),
-    startDatetime: `${data.dueDate.getFullYear()}-${data.dueDate.getMonth()}-${data.dueDate.getDate()}T${timeStart}`,
-    endDatetime: `${data.dueDate.getFullYear()}-${data.dueDate.getMonth()}-${data.dueDate.getDate()}T${timeEnd}`,
+    startDatetime: `${data.getFullYear()}-${data.getMonth()}-${data.getDate()}T${timeStart}`,
+    endDatetime: `${data.getFullYear()}-${data.getMonth()}-${data.getDate()}T${timeEnd}`,
   };
 };
 

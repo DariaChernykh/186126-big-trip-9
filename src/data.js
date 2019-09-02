@@ -1,5 +1,8 @@
+import {getTime} from "./utils";
+
 const MS_IN_WEEK = 7 * 24 * 60 * 60 * 1000;
 export const getRandomInt = (min, max) => Math.floor(Math.random() * (max + 1 - min)) + min;
+
 
 const TYPES = {
   'transfer': [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
@@ -91,6 +94,7 @@ const getPhotos = (number) => {
 
 export const getData = () => {
   const options = getRandomOptions(OPTIONS);
+  const dueDate = new Date(getRandomInt(Date.now() - MS_IN_WEEK, Date.now() + MS_IN_WEEK));
   return {
     activity: TYPES.activity,
     transfer: TYPES.transfer,
@@ -101,6 +105,7 @@ export const getData = () => {
     description: getDescription(DESCRIPTIONS),
     options,
     price: getPrice(options),
-    dueDate: new Date(getRandomInt(Date.now() - MS_IN_WEEK, Date.now() + MS_IN_WEEK)),
+    dueDate,
+    testDate: getTime(dueDate),
   };
 };
