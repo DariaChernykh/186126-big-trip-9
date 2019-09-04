@@ -1,10 +1,19 @@
-export const getDay = (count, day) => `
-<li class="trip-days__item  day">
-  <div class="day__info">
-    <span class="day__counter">${count}</span>
-    <time class="day__date" datetime="${day.getFullYear()}-${day.getMonth()}-${day.getDate()}">${day.getMonth()} ${day.getDate()}</time>
-  </div>
+import AbstractComponent from "./abstract-component";
 
-  <ul class="trip-events__list"></ul>
-</li>
-`;
+export default class Day extends AbstractComponent {
+  constructor(count, day) {
+    super();
+    this._count = count;
+    this._day = day;
+  }
+  getTemplate() {
+    return `<li class="trip-days__item  day">
+      <div class="day__info">
+        <span class="day__counter">${this._count}</span>
+        <time class="day__date" datetime="${this._day.getFullYear()}-${this._day.getMonth()}-${this._day.getDate()}">${this._day.getMonth()} ${this._day.getDate()}</time>
+      </div>
+    
+      <ul class="trip-events__list"></ul>
+    </li>`;
+  }
+}

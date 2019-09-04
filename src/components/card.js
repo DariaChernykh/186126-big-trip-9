@@ -3,15 +3,16 @@ import {createElement} from "../utils";
 import AbstractComponent from "./abstract-component";
 
 export default class Card extends AbstractComponent {
-  constructor(data, date) {
+  constructor(data) {
     super();
     this._type = data.type.key;
     this._typeName = data.type.name;
-    this._start = date.timeStart;
-    this._end = date.timeEnd;
-    this._startDatetime = date.startDatetime;
-    this._endDatetime = date.endDatetime;
-    this._duration = date.duration;
+    this._start = data.testDate.timeStart;
+    this._end = data.testDate.timeEnd;
+    this._startDatetime = data.testDate.startDatetime;
+    this._endDatetime = data.testDate.endDatetime;
+    this._durationHours = data.testDate.durationHours;
+    this._durationMinutes = data.testDate.durationMinutes;
     this._price = data.price;
     this._options = data.options;
     this._onEdit = null;
@@ -41,9 +42,9 @@ export default class Card extends AbstractComponent {
           <p class="event__time">
             <time class="event__start-time" datetime="${this._startDatetime}">${this._start}</time>
             &mdash;
-            <time class="event__end-time" datetime="2${this._endDatetime}">${this._end}</time>
+            <time class="event__end-time" datetime="${this._endDatetime}">${this._end}</time>
           </p>
-          <p class="event__duration">${this._duration}</p>
+          <p class="event__duration">${this._durationHours ? `${this._durationHours}H` : ``} ${this._durationMinutes ? `${this._durationMinutes}M` : ``}</p>
         </div>
     
         <p class="event__price">

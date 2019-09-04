@@ -11,14 +11,14 @@ const createActivityChoice = (arr) => arr.reduce((acc, value) => acc + `<div cla
                 </div>`, ``);
 
 export default class CardEdit extends AbstractComponent {
-  constructor(data, date) {
+  constructor(data) {
     super();
     this._activity = data.activity;
     this._transfer = data.transfer;
     this._type = data.type.key;
     this._typeName = data.type.name;
-    this._start = date.timeStart;
-    this._end = date.timeEnd;
+    this._start = data.testDate.timeStart;
+    this._end = data.testDate.timeEnd;
     this._dueDate = data.dueDate;
     this._cities = data.cities;
     this._city = data.city;
