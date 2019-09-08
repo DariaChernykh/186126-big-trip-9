@@ -1,8 +1,5 @@
-import {getTime} from "./utils";
-
-const MS_IN_WEEK = 7 * 24 * 60 * 60 * 1000;
+const MS_IN_HALF_WEEK = 4 * 24 * 60 * 60 * 1000;
 export const getRandomInt = (min, max) => Math.floor(Math.random() * (max + 1 - min)) + min;
-
 
 const TYPES = {
   'transfer': [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
@@ -23,39 +20,48 @@ const getType = (types) => {
 const OPTIONS = {
   'luggage': {
     name: `Add luggage`,
-    value: 10
+    value: 10,
+    available: true,
   },
   'comfort': {
     name: `Switch to comfort class`,
-    value: 150
+    value: 150,
+    available: true,
   },
   'meal': {
     name: `Add meal`,
-    value: 2
+    value: 2,
+    available: true,
   },
   'seats': {
     name: `Choose seats`,
-    value: 9
+    value: 9,
+    available: true,
   },
   'car': {
     name: `Rent a car`,
-    value: 200
+    value: 200,
+    available: true,
   },
   'breakfast': {
     name: `Add breakfast`,
-    value: 50
+    value: 50,
+    available: true,
   },
   'lunch': {
     name: `Lunch in city`,
-    value: 30
+    value: 30,
+    available: true,
   },
   'tickets': {
     name: `Book tickets`,
-    value: 40
+    value: 40,
+    available: true,
   },
   'train': {
     name: `Travel by train`,
-    value: 40
+    value: 40,
+    available: true,
   },
 };
 
@@ -94,7 +100,9 @@ const getPhotos = (number) => {
 
 export const getData = () => {
   const options = getRandomOptions(OPTIONS);
-  const dueDate = new Date(getRandomInt(Date.now() - MS_IN_WEEK, Date.now() + MS_IN_WEEK));
+  const dateFrom = getRandomInt(Date.now() - MS_IN_HALF_WEEK, Date.now() + MS_IN_HALF_WEEK);
+  const dateTo = getRandomInt(dateFrom, dateFrom + 12 * 60 * 60 * 1000);
+
   return {
     activity: TYPES.activity,
     transfer: TYPES.transfer,
@@ -105,7 +113,7 @@ export const getData = () => {
     description: getDescription(DESCRIPTIONS),
     options,
     price: getPrice(options),
-    dueDate,
-    testDate: getTime(dueDate),
+    dateFrom,
+    dateTo,
   };
 };

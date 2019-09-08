@@ -1,25 +1,28 @@
 import {getOptions} from "./options";
-import {createElement, getDate} from "../utils";
+import {createElement} from "../utils";
 import AbstractComponent from "./abstract-component";
+import flatpickr from "flatpickr";
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/light.css';
 
 const NUM_PHOTOS = 4;
 const createPhotoElements = (arr) => arr.reduce((acc, value) => acc + `<img class="event__photo" src="${value}" alt="Event photo">`, ``);
 const createDestination = (arr) => arr.reduce((acc, value) => acc + `<option value="${value}"></option>`, ``);
-const createActivityChoice = (arr) => arr.reduce((acc, value) => acc + `<div class="event__type-item">
+const createActivityChoice = (arr) => {
+  return arr.reduce((acc, value) => acc + `<div class="event__type-item">
                   <input id="event-type-${value}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${value}">
                   <label class="event__type-label  event__type-label--${value}" for="event-type-${value}-1">${value.toUpperCase().slice(0, 1) + value.slice(1)}</label>
                 </div>`, ``);
+};
 
 export default class CardEdit extends AbstractComponent {
-  constructor(data) {
+  constructor(data, container) {
     super();
+    this._container = container;
     this._activity = data.activity;
     this._transfer = data.transfer;
     this._type = data.type.key;
     this._typeName = data.type.name;
-    this._start = data.testDate.timeStart;
-    this._end = data.testDate.timeEnd;
-    this._dueDate = data.dueDate;
     this._cities = data.cities;
     this._city = data.city;
     this._price = data.price;
@@ -28,22 +31,38 @@ export default class CardEdit extends AbstractComponent {
     this._description = data.description;
     this._onEdit = null;
     this._onSubmitHandler = this._onSubmitButtonClick.bind(this);
+    this._onEscKeyUp = this._onEscUp.bind(this);
+    this._onChangeType = this._onChangeType.bind(this);
+    this._dateFrom = data.dateFrom;
+    this._dateTo = data.dateTo;
   }
 
-  _onSubmitButtonClick() {
+  _onSubmitButtonClick(evt) {
+    evt.preventDefault();
     if (typeof this._onEdit === `function`) {
       this._onEdit();
     }
   }
 
-  onEdit(fn) {
+  onSubmit(fn) {
     this._onEdit = fn;
+  }
+
+  _onEscUp(evt) {
+    evt.preventDefault();
+    if (typeof this._onEscape === `function` && evt.code === `Escape`) {
+      this._onEscape();
+    }
+  }
+
+  onEscape(fn) {
+    this._onEscape = fn;
   }
 
   getTemplate() {
     return `
     <li class="trip-events__item">
-      <form class="event  event--edit" action="#" method="post">
+      <form class="event  event--edit" action="#" method="get">
         <header class="event__header">
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -79,12 +98,12 @@ export default class CardEdit extends AbstractComponent {
             <label class="visually-hidden" for="event-start-time-1">
               From
             </label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDate(this._dueDate).start} ${this._start}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" data-input>
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDate(this._dueDate).end} ${this._end}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" data-input>
           </div>
     
           <div class="event__field-group  event__field-group--price">
@@ -151,11 +170,53 @@ export default class CardEdit extends AbstractComponent {
   bind() {
     this._element.querySelector(`form`)
       .addEventListener(`submit`, this._onSubmitHandler);
+    document.addEventListener(`keyup`, this._onEscKeyUp);
+
+    flatpickr(this._element.querySelector(`#event-start-time-1`), {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._dateFrom,
+      enableTime: true,
+      altFormat: `d/m/Y H:i`,
+    });
+    flatpickr(this._element.querySelector(`#event-end-time-1`), {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._dateTo,
+      enableTime: true,
+      altFormat: `d/m/Y H:i`,
+    });
+
+    this._element.querySelector(`.event__type-list`).addEventListener(`click`, this._onChangeType);
   }
 
   unbind() {
     this._element.querySelector(`form`)
       .removeEventListener(`submit`, this._onSubmitHandler);
+    this._element.querySelector(`.event__type-list`).removeEventListener(`click`, this._onChangeType);
+
+    document.removeEventListener(`keyup`, this._onEscKeyUp);
   }
 
+  _onChangeType(el) {
+    if (el.target.classList.contains(`event__type-label`)) {
+      const type = el.target.parentElement.querySelector(`.event__type-input`).value;
+      this._typeName = type;
+      if (type === `restaurant` || type === `sightseeing` || type === `check-in`) {
+        this._type = `activity`;
+      } else {
+        this._type = `transfer`;
+      }
+      this._partialUpdate();
+    }
+  }
+  _partialUpdate() {
+    this.unbind();
+    const prevElement = this._element;
+    this._element = null;
+    this._element = this.getElement();
+    this._container.replaceChild(this._element, prevElement);
+    prevElement.remove();
+    this.bind();
+  }
 }

@@ -1,22 +1,31 @@
 import {getOptions} from "./options";
 import {createElement} from "../utils";
 import AbstractComponent from "./abstract-component";
+import moment from "moment";
+
+const generateDurationstring = (duration) => {
+  let minutes = Math.floor((duration / (1000 * 60)) % 60);
+  let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+  hours = (hours < 10) ? `0` + hours : hours;
+  minutes = (minutes < 10) ? `0` + minutes : minutes;
+
+  return `${parseInt(hours, 10) ? `${hours}H` : ``} ${parseInt(minutes, 10) ? `${minutes}M` : ``}`.trim();
+};
 
 export default class Card extends AbstractComponent {
   constructor(data) {
     super();
     this._type = data.type.key;
     this._typeName = data.type.name;
-    this._start = data.testDate.timeStart;
-    this._end = data.testDate.timeEnd;
-    this._startDatetime = data.testDate.startDatetime;
-    this._endDatetime = data.testDate.endDatetime;
-    this._durationHours = data.testDate.durationHours;
-    this._durationMinutes = data.testDate.durationMinutes;
     this._price = data.price;
     this._options = data.options;
     this._onEdit = null;
     this._onEditHandler = this._onEditButtonClick.bind(this);
+
+    this._dateFrom = moment(data.dateFrom);
+    this._dateTo = moment(data.dateTo);
+    this._duration = data.dateTo - data.dateFrom;
   }
 
   _onEditButtonClick() {
@@ -40,11 +49,11 @@ export default class Card extends AbstractComponent {
     
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${this._startDatetime}">${this._start}</time>
+            <time class="event__start-time" datetime="${this._dateFrom.format()}">${this._dateFrom.format(`HH:mm`)}</time>
             &mdash;
-            <time class="event__end-time" datetime="${this._endDatetime}">${this._end}</time>
+            <time class="event__end-time" datetime="${this._dateTo.format()}">${this._dateTo.format(`HH:mm`)}</time>
           </p>
-          <p class="event__duration">${this._durationHours ? `${this._durationHours}H` : ``} ${this._durationMinutes ? `${this._durationMinutes}M` : ``}</p>
+          <p class="event__duration">${generateDurationstring(this._duration)}</p>
         </div>
     
         <p class="event__price">
@@ -53,7 +62,7 @@ export default class Card extends AbstractComponent {
     
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-         ${this._options ? getOptions(this._options, `short`) : ``}
+         ${this._options ? getOptions(this._options.slice(0, 3), `short`) : ``}
         </ul>
     
         <button class="event__rollup-btn" type="button">

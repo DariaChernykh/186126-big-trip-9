@@ -1,13 +1,13 @@
 export const getOptions = (options, mode) => {
   if (options.length && mode === `short`) {
     return options.reduce((acc, val) => {
-      acc += `
-      <li class="event__offer">
+      if (val[1].available) {
+        acc += `<li class="event__offer">
         <span class="event__offer-title">${val[1].name}</span>
         &plus;
         &euro;&nbsp;<span class="event__offer-price">${val[1].value}</span>
-      </li>
-    `;
+      </li>`;
+      }
       return acc;
     }, ``);
   } else if (options.length && mode === `edit`) {
