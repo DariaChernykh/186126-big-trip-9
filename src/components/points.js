@@ -1,5 +1,5 @@
 import {getData} from "../data";
-const compareDates = (a, b) => a.dueDate - b.dueDate;
+const compareDates = (a, b) => a.dateFrom - b.dateFrom;
 
 export const getPoints = (num) => {
   const arr = [];
