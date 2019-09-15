@@ -5,8 +5,12 @@ import flatpickr from "flatpickr";
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 
-const NUM_PHOTOS = 4;
-const createPhotoElements = (arr) => arr.reduce((acc, value) => acc + `<img class="event__photo" src="${value}" alt="Event photo">`, ``);
+const createPhotoElements = (arr) => {
+  if (!arr) {
+    return ``;
+  }
+  return arr.reduce((acc, value) => acc + `<img class="event__photo" src="${value}" alt="Event photo">`, ``);
+};
 const createDestination = (arr) => arr.reduce((acc, value) => acc + `<option value="${value}"></option>`, ``);
 const createActivityChoice = (arr) => {
   return arr.reduce((acc, value) => acc + `<div class="event__type-item">
@@ -32,9 +36,14 @@ export default class CardEdit extends AbstractComponent {
     this._onEdit = null;
     this._onSubmitHandler = this._onSubmitButtonClick.bind(this);
     this._onEscKeyUp = this._onEscUp.bind(this);
+    this._onDeleteHandler = this._onDeleteClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
     this._dateFrom = data.dateFrom;
     this._dateTo = data.dateTo;
+  }
+
+  onSubmit(fn) {
+    this._onEdit = fn;
   }
 
   _onSubmitButtonClick(evt) {
@@ -44,19 +53,28 @@ export default class CardEdit extends AbstractComponent {
     }
   }
 
-  onSubmit(fn) {
-    this._onEdit = fn;
+  onEscape(fn) {
+    this._onEscape = fn;
   }
 
   _onEscUp(evt) {
     evt.preventDefault();
-    if (typeof this._onEscape === `function` && evt.code === `Escape`) {
-      this._onEscape();
+    if (typeof this._onEscape === `function`) {
+      if (evt.type === `click` || evt.code === `Escape`) {
+        this._onEscape();
+      }
     }
   }
 
-  onEscape(fn) {
-    this._onEscape = fn;
+  onDelete(fn) {
+    this._onDelete = fn;
+  }
+
+  _onDeleteClick(evt) {
+    evt.preventDefault();
+    if (typeof this._onDelete === `function`) {
+      this._onDelete();
+    }
   }
 
   getTemplate() {
@@ -111,7 +129,7 @@ export default class CardEdit extends AbstractComponent {
               <span class="visually-hidden">Price</span>
               € 
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${this._price}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${this._price}">
           </div>
     
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -146,7 +164,7 @@ export default class CardEdit extends AbstractComponent {
     
             <div class="event__photos-container">
               <div class="event__photos-tape">
-                ${createPhotoElements(this._photos(NUM_PHOTOS))}
+                ${createPhotoElements(this._photos)}
               </div>
             </div>
           </section>
@@ -170,6 +188,13 @@ export default class CardEdit extends AbstractComponent {
   bind() {
     this._element.querySelector(`form`)
       .addEventListener(`submit`, this._onSubmitHandler);
+
+    this._element.querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, this._onDeleteHandler);
+
+    this._element.querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, this._onEscKeyUp);
+
     document.addEventListener(`keyup`, this._onEscKeyUp);
 
     flatpickr(this._element.querySelector(`#event-start-time-1`), {
@@ -193,6 +218,13 @@ export default class CardEdit extends AbstractComponent {
   unbind() {
     this._element.querySelector(`form`)
       .removeEventListener(`submit`, this._onSubmitHandler);
+
+    this._element.querySelector(`.event__reset-btn`)
+      .removeEventListener(`click`, this._onDeleteHandler);
+
+    this._element.querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, this._onEscKeyUp);
+
     this._element.querySelector(`.event__type-list`).removeEventListener(`click`, this._onChangeType);
 
     document.removeEventListener(`keyup`, this._onEscKeyUp);

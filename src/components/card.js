@@ -20,6 +20,7 @@ export default class Card extends AbstractComponent {
     this._typeName = data.type.name;
     this._price = data.price;
     this._options = data.options;
+    this._city = data.city;
     this._onEdit = null;
     this._onEditHandler = this._onEditButtonClick.bind(this);
 
@@ -45,7 +46,7 @@ export default class Card extends AbstractComponent {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${this._typeName}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${this._typeName.toUpperCase().slice(0, 1) + this._typeName.slice(1)} ${this._type === `activity` ? `in` : `to`} airport</h3>
+        <h3 class="event__title">${this._typeName.toUpperCase().slice(0, 1) + this._typeName.slice(1)} ${this._type === `activity` ? `in` : `to`} ${this._city}</h3>
     
         <div class="event__schedule">
           <p class="event__time">
