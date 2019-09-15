@@ -29,6 +29,11 @@ export default class PointController {
       pointEditComponent.unrender();
     });
 
+    pointEditComponent.onDelete(() => {
+      this._onDataChange(null, this._point);
+      pointEditComponent.unbind();
+    });
+
     pointEditComponent.onSubmit(() => {
       const formData = new FormData(pointEditComponent.getElement().querySelector(`.event--edit`));
       const getOptions = () => {
@@ -67,7 +72,6 @@ export default class PointController {
         cities: pointEditComponent._cities,
         photos: pointEditComponent._photos,
       };
-      console.log(entry);
       this._onDataChange(entry, this._point);
       pointEditComponent.unbind();
     });

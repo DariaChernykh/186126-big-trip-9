@@ -90,6 +90,7 @@ const getPrice = (arr) => {
   return 0;
 };
 
+const NUM_PHOTOS = 4;
 const getPhotos = (number) => {
   const photos = [];
   for (let i = 0; i < number; i++) {
@@ -109,7 +110,7 @@ export const getData = () => {
     type: getType(TYPES),
     cities: CITIES,
     city: CITIES[getRandomInt(0, CITIES.length - 1)],
-    photos: getPhotos,
+    photos: getPhotos(NUM_PHOTOS),
     description: getDescription(DESCRIPTIONS),
     options,
     price: getPrice(options),
