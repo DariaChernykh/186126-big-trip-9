@@ -61,7 +61,7 @@ export default class PointController {
           name: pointEditComponent._typeName,
         },
         city: formData.get(`event-destination`),
-        price: formData.get(`event-price`),
+        price: parseInt(formData.get(`event-price`), 10),
         description: getDescription(),
         options: getOptions(),
         dateFrom,

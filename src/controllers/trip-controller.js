@@ -3,17 +3,20 @@ import DaysContainer from "../components/container";
 import Day from "../components/day";
 import PointController from "./point-controller";
 import NewPoint from "../components/new-point";
+import Stats from "../components/statistics";
 
 export class TripController {
   constructor(board, points) {
     this._board = board;
     this._points = points;
     this._sort = new Sort();
+    this._tripStats = new Stats();
     this._daysContainer = new DaysContainer();
     this._subscriptions = [];
     this._onChangeView = this._onChangeView.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._addPointBtn = document.querySelector(`.trip-main__event-add-btn`);
+    this._filters = document.querySelector(`.trip-filters`);
   }
 
   _onChangeView() {
@@ -21,6 +24,7 @@ export class TripController {
   }
 
   _onDataChange(newData, oldData) {
+
     if (newData === null) {
       this._points.splice(this._points.findIndex((it) => it === oldData), 1);
     } else if (oldData === null) {
@@ -29,13 +33,14 @@ export class TripController {
       this._points[this._points.findIndex((it) => it === oldData)] = newData;
     }
     this._daysContainer.getElement().innerHTML = ``;
-    this._getDaysForPoints();
+    this._getDaysForPoints(this._points);
+    this._tripStats.updateData(this._points);
   }
 
-  _getDaysForPoints() {
+  _getDaysForPoints(arr) {
     const listUniqDays = [];
 
-    this._points.forEach(value => {
+    arr.forEach(value => {
       if (listUniqDays.findIndex(elem => new Date(elem).getDate() === new Date(value.dateFrom).getDate()) === -1) {
         listUniqDays.push(value.dateFrom);
       }
@@ -46,7 +51,7 @@ export class TripController {
       this._daysContainer.getElement().appendChild(day.getElement());
     });
 
-    this._points.forEach((point) => {
+    arr.forEach((point) => {
       const dayOfPoint = new Date(point.dateFrom).getDate();
       const test = listUniqDays.findIndex(elem => new Date(elem).getDate() === dayOfPoint);
       const dayForPoint = this._daysContainer.getElement().querySelectorAll(`.trip-events__list`)[test];
@@ -57,10 +62,13 @@ export class TripController {
   init() {
     this._board.appendChild(this._sort.getElement());
     this._board.appendChild(this._daysContainer.getElement());
-    this._getDaysForPoints();
+    this._getDaysForPoints(this._points);
 
     this._sort.getElement()
       .addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
+
+    this._filters
+      .addEventListener(`click`, (evt) => this._onFilterClick(evt));
 
     this._addPointBtn.addEventListener(`click`, () => {
       const newPoint = new NewPoint(this._board);
@@ -95,6 +103,8 @@ export class TripController {
         newPoint.unrender();
       });
     });
+
+    this._tripStats.generateCharts(this._points);
   }
 
   _renderPoint(point, parent) {
@@ -124,7 +134,29 @@ export class TripController {
         sortedByPrice.forEach((point) => this._renderPoint(point, this._createOneDay()));
         break;
       default:
-        this._getDaysForPoints();
+        this._getDaysForPoints(this._points);
+        break;
+    }
+  }
+
+  _onFilterClick(evt) {
+    if (!evt.target.classList.contains(`trip-filters__filter-label`)) {
+      return;
+    }
+
+    this._daysContainer.getElement().innerHTML = ``;
+    const input = evt.target.parentElement.querySelector(`.trip-filters__filter-input`);
+    switch (input.value) {
+      case `future`:
+        const futurePoints = this._points.slice().filter((point) => point.dateFrom > new Date());
+        this._getDaysForPoints(futurePoints);
+        break;
+      case `past`:
+        const pastPoints = this._points.slice().filter((point) => point.dateTo < new Date());
+        this._getDaysForPoints(pastPoints);
+        break;
+      default:
+        this._getDaysForPoints(this._points);
         break;
     }
   }

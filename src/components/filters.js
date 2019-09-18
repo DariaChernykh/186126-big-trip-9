@@ -1,7 +1,13 @@
+import AbstractComponent from "./abstract-component";
+
 const FILTERS = [`everything`, `future`, `past`];
 
-export const getFilters = () => `
-<form class="trip-filters" action="#" method="get">
+export default class Filters extends AbstractComponent {
+  constructor() {
+    super();
+  }
+  getTemplate() {
+    return `<form class="trip-filters" action="#" method="get">
   ${FILTERS.reduce((acc, filter) => {
     acc += `
     <div class="trip-filters__filter">
@@ -12,5 +18,6 @@ export const getFilters = () => `
     return acc;
   }, ``)}
   <button class="visually-hidden" type="submit">Accept filter</button>
-</form>
-`;
+</form>`;
+  }
+}
