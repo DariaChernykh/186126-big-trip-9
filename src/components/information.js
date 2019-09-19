@@ -7,9 +7,9 @@ const returnDate = (start, end) => {
 export const getInformation = (points) => {
   return `
     <div class="trip-info__main">
-      <h1 class="trip-info__title">${points[0].city} &mdash; ... &mdash; ${points[points.length - 1].city}</h1>
+      <h1 class="trip-info__title">${points[0]._city} &mdash; ... &mdash; ${points[points.length - 1]._city}</h1>
     
-      <p class="trip-info__dates">${returnDate(points[0].dateFrom, points[points.length - 1].dateFrom)}</p>
+      <p class="trip-info__dates">${returnDate(points[0]._dateFrom, points[points.length - 1]._dateFrom)}</p>
     </div>
   `;
 };

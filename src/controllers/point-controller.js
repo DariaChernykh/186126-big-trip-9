@@ -38,39 +38,36 @@ export default class PointController {
       const formData = new FormData(pointEditComponent.getElement().querySelector(`.event--edit`));
       const getOptions = () => {
         const options = pointEditComponent.getElement().querySelectorAll(`.event__offer-checkbox`);
+
+
         [...options].forEach((option) => {
           const nameOption = option.name.slice(12);
           pointEditComponent._options.forEach((value) => {
-            if (value[0] === nameOption && option.checked) {
-              value[1].available = true;
+            if (value.key === nameOption && option.checked) {
+              value.accepted = true;
             }
-            if (value[0] === nameOption && !option.checked) {
-              value[1].available = false;
+            if (value.key === nameOption && !option.checked) {
+              value.accepted = false;
             }
           });
         });
         return pointEditComponent._options;
       };
 
-      const getDescription = () => pointEditComponent._description = pointEditComponent.getElement().querySelector(`.event__destination-description`).innerText;
       const dateFrom = new Date(formData.get(`event-start-time`));
       const dateTo = new Date(formData.get(`event-end-time`));
       const entry = {
-        type: {
-          key: pointEditComponent._type,
-          name: pointEditComponent._typeName,
-        },
-        city: formData.get(`event-destination`),
-        price: parseInt(formData.get(`event-price`), 10),
-        description: getDescription(),
-        options: getOptions(),
-        dateFrom,
-        dateTo,
-        duration: dateTo.getTime() - dateFrom.getTime(),
-        activity: pointEditComponent._activity,
-        transfer: pointEditComponent._transfer,
-        cities: pointEditComponent._cities,
-        photos: pointEditComponent._photos,
+        _type: pointEditComponent._type,
+        _typeName: pointEditComponent._typeName,
+        _city: formData.get(`event-destination`),
+        _price: parseInt(formData.get(`event-price`), 10),
+        _description: pointEditComponent.getElement().querySelector(`.event__destination-description`).innerText,
+        _options: getOptions(),
+        _isFavorite: formData.get(`event-favorite`),
+        _dateFrom: dateFrom,
+        _dateTo: dateTo,
+        _duration: dateTo.getTime() - dateFrom.getTime(),
+        _photos: pointEditComponent._photos,
       };
       this._onDataChange(entry, this._point);
       pointEditComponent.unbind();

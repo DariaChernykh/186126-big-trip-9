@@ -5,11 +5,19 @@ import flatpickr from "flatpickr";
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 
+const TYPES = {
+  'transfer': [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
+  'activity': [`restaurant`, `sightseeing`, `check-in`]
+};
+
+const CITIES = [`Amsterdam`, `Geneva`, `Chamonix`, `London`, `Berlin`, `Vienna`, `Paris`, `Manchester`];
+
+
 const createPhotoElements = (arr) => {
   if (!arr) {
     return ``;
   }
-  return arr.reduce((acc, value) => acc + `<img class="event__photo" src="${value}" alt="Event photo">`, ``);
+  return arr.reduce((acc, value) => acc + `<img class="event__photo" src="${value.src}" alt="${value.description}">`, ``);
 };
 const createDestination = (arr) => arr.reduce((acc, value) => acc + `<option value="${value}"></option>`, ``);
 const createActivityChoice = (arr) => {
@@ -25,21 +33,22 @@ export default class CardEdit extends AbstractComponent {
     this._container = container;
     this._activity = data.activity;
     this._transfer = data.transfer;
-    this._type = data.type.key;
-    this._typeName = data.type.name;
+    this._type = data._type;
+    this._typeName = data._typeName;
     this._cities = data.cities;
-    this._city = data.city;
-    this._price = data.price;
-    this._options = data.options;
-    this._photos = data.photos;
-    this._description = data.description;
+    this._city = data._city;
+    this._price = data._price;
+    this._options = data._options;
+    this._isFavorite = data.is_favorite;
+    this._photos = data._photos;
+    this._description = data._description;
     this._onEdit = null;
     this._onSubmitHandler = this._onSubmitButtonClick.bind(this);
     this._onEscKeyUp = this._onEscUp.bind(this);
     this._onDeleteHandler = this._onDeleteClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
-    this._dateFrom = data.dateFrom;
-    this._dateTo = data.dateTo;
+    this._dateFrom = data._dateFrom;
+    this._dateTo = data._dateTo;
   }
 
   onSubmit(fn) {
@@ -78,8 +87,7 @@ export default class CardEdit extends AbstractComponent {
   }
 
   getTemplate() {
-    return `
-    <li class="trip-events__item">
+    return `<li class="trip-events__item">
       <form class="event  event--edit" action="#" method="get">
         <header class="event__header">
           <div class="event__type-wrapper">
@@ -92,12 +100,12 @@ export default class CardEdit extends AbstractComponent {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-                ${createActivityChoice(this._transfer)}
+                ${createActivityChoice(TYPES.transfer)}
               </fieldset>
     
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
-                ${createActivityChoice(this._activity)}
+                ${createActivityChoice(TYPES.activity)}
               </fieldset>
             </div>
           </div>
@@ -108,7 +116,7 @@ export default class CardEdit extends AbstractComponent {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1">
             <datalist id="destination-list-1">
-              ${createDestination(this._cities)}
+              ${createDestination(CITIES)}
             </datalist>
           </div>
     
@@ -135,7 +143,7 @@ export default class CardEdit extends AbstractComponent {
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
           <button class="event__reset-btn" type="reset">Delete</button>
     
-          <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+          <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${this._isFavorite ? `checked` : ``}>
           <label class="event__favorite-btn" for="event-favorite-1">
             <span class="visually-hidden">Add to favorite</span>
             <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -170,8 +178,7 @@ export default class CardEdit extends AbstractComponent {
           </section>
         </section>
       </form>
-    </li>
-    `.trim();
+    </li>`.trim();
   }
 
   render() {

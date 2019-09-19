@@ -16,17 +16,17 @@ const generateDurationstring = (duration) => {
 export default class Card extends AbstractComponent {
   constructor(data) {
     super();
-    this._type = data.type.key;
-    this._typeName = data.type.name;
-    this._price = data.price;
-    this._options = data.options;
-    this._city = data.city;
+    this._type = data._type;
+    this._typeName = data._typeName;
+    this._price = data._price;
+    this._options = data._options;
+    this._city = data._city;
     this._onEdit = null;
     this._onEditHandler = this._onEditButtonClick.bind(this);
 
-    this._dateFrom = moment(data.dateFrom);
-    this._dateTo = moment(data.dateTo);
-    this._duration = data.dateTo - data.dateFrom;
+    this._dateFrom = moment(data._dateFrom);
+    this._dateTo = moment(data._dateTo);
+    this._duration = data._duration;
   }
 
   _onEditButtonClick() {

@@ -39,10 +39,9 @@ export class TripController {
 
   _getDaysForPoints(arr) {
     const listUniqDays = [];
-
     arr.forEach(value => {
-      if (listUniqDays.findIndex(elem => new Date(elem).getDate() === new Date(value.dateFrom).getDate()) === -1) {
-        listUniqDays.push(value.dateFrom);
+      if (listUniqDays.findIndex(elem => new Date(elem).getDate() === new Date(value._dateFrom).getDate()) === -1) {
+        listUniqDays.push(value._dateFrom);
       }
     });
 
@@ -51,10 +50,12 @@ export class TripController {
       this._daysContainer.getElement().appendChild(day.getElement());
     });
 
-    arr.forEach((point) => {
-      const dayOfPoint = new Date(point.dateFrom).getDate();
+
+    arr.forEach(point => {
+      const dayOfPoint = new Date(point._dateFrom).getDate();
       const test = listUniqDays.findIndex(elem => new Date(elem).getDate() === dayOfPoint);
       const dayForPoint = this._daysContainer.getElement().querySelectorAll(`.trip-events__list`)[test];
+
       this._renderPoint(point, dayForPoint);
     });
   }
@@ -126,11 +127,11 @@ export class TripController {
     this._daysContainer.getElement().innerHTML = ``;
     switch (evt.target.control.value) {
       case `sort-time`:
-        const sortedByTime = this._points.slice().sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
+        const sortedByTime = this._points.slice().sort((a, b) => (b._dateTo - b._dateFrom) - (a._dateTo - a._dateFrom));
         sortedByTime.forEach((point) => this._renderPoint(point, this._createOneDay()));
         break;
       case `sort-price`:
-        const sortedByPrice = this._points.slice().sort((a, b) => b.price - a.price);
+        const sortedByPrice = this._points.slice().sort((a, b) => b._price - a._price);
         sortedByPrice.forEach((point) => this._renderPoint(point, this._createOneDay()));
         break;
       default:
@@ -148,11 +149,11 @@ export class TripController {
     const input = evt.target.parentElement.querySelector(`.trip-filters__filter-input`);
     switch (input.value) {
       case `future`:
-        const futurePoints = this._points.slice().filter((point) => point.dateFrom > new Date());
+        const futurePoints = this._points.slice().filter((point) => point._dateFrom > new Date());
         this._getDaysForPoints(futurePoints);
         break;
       case `past`:
-        const pastPoints = this._points.slice().filter((point) => point.dateTo < new Date());
+        const pastPoints = this._points.slice().filter((point) => point._dateTo < new Date());
         this._getDaysForPoints(pastPoints);
         break;
       default:

@@ -66,27 +66,27 @@ export default class Stats extends AbstractComponent {
     }
 
     arr.forEach((point) => {
-      let curIndex = this.labels.findIndex((elem) => elem === point.type.name);
+      let curIndex = this.labels.findIndex((elem) => elem === point._typeName);
       if (curIndex === -1) {
-        this.labels.push(point.type.name);
-        this.prices.push(point.price);
+        this.labels.push(point._typeName);
+        this.prices.push(point._price);
       } else {
-        this.prices[curIndex] += point.price;
+        this.prices[curIndex] += point._price;
       }
 
-      const duration = Math.round(moment.duration(new moment(point.dateTo).diff(new moment(point.dateFrom))).asHours());
-      const curIndexPlace = this.placesNames.findIndex((elem) => elem === point.city);
+      const duration = Math.round(moment.duration(new moment(point._dateTo).diff(new moment(point._dateFrom))).asHours());
+      const curIndexPlace = this.placesNames.findIndex((elem) => elem === point._city);
       if (curIndexPlace === -1) {
-        this.placesNames.push(point.city);
+        this.placesNames.push(point._city);
         this.placesTime.push(duration);
       } else {
         this.placesTime[curIndexPlace] += duration;
       }
 
-      if (point.type.key === `transfer`) {
-        !this.transport.hasOwnProperty(point.type.name) ?
-          this.transport[point.type.name] = 1 :
-          this.transport[point.type.name] += 1;
+      if (point._type === `transfer`) {
+        !this.transport.hasOwnProperty(point._typeName) ?
+          this.transport[point._typeName] = 1 :
+          this.transport[point._typeName] += 1;
       }
     });
 
@@ -105,8 +105,6 @@ export default class Stats extends AbstractComponent {
         this.transportTimes.push(this.transport[key]);
       }
     }
-
-    console.log(this.placesNames, this.placesTime);
   }
 
   generateCharts(arr) {
