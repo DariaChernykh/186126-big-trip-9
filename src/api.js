@@ -36,6 +36,14 @@ export default class API {
       .then(toJSON);
   }
 
+  getOffers(type) {
+    return this._load({url: `offers`})
+      .then(toJSON)
+      .then((offers) => offers.filter((offer) => {
+        return offer.type === type || type === undefined;
+      }));
+  }
+
   createPoint({point}) {
     return this._load({
       url: `points`,

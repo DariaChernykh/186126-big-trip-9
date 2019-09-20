@@ -10,6 +10,7 @@ const TYPES = {
   'activity': [`restaurant`, `sightseeing`, `check-in`]
 };
 
+const checkType = (type) => TYPES.transfer.findIndex((elem) => elem === type) >= 0 ? `transfer` : `activity`;
 const CITIES = [`Amsterdam`, `Geneva`, `Chamonix`, `London`, `Berlin`, `Vienna`, `Paris`, `Manchester`];
 
 
@@ -28,27 +29,30 @@ const createActivityChoice = (arr) => {
 };
 
 export default class CardEdit extends AbstractComponent {
-  constructor(data, container) {
+  constructor(data, container, offers, places) {
     super();
     this._container = container;
-    this._activity = data.activity;
-    this._transfer = data.transfer;
-    this._type = data._type;
-    this._typeName = data._typeName;
-    this._cities = data.cities;
-    this._city = data._city;
-    this._price = data._price;
-    this._options = data._options;
+    this._type = data.type;
+    this._destination = {
+      name: data.destination.name,
+      pictures: data.destination.pictures,
+      description: data.destination.description
+    };
+    this._price = data.price;
+    this._options = data.options;
     this._isFavorite = data.is_favorite;
-    this._photos = data._photos;
-    this._description = data._description;
+    this._dateFrom = data.dateFrom;
+    this._dateTo = data.dateTo;
+    this._commonOffers = offers;
+    this._avalibleOffers = this._commonOffers.length ? this._commonOffers.find((offer) => offer.type === this._type) : [];
+    this._places = places;
+
     this._onEdit = null;
     this._onSubmitHandler = this._onSubmitButtonClick.bind(this);
     this._onEscKeyUp = this._onEscUp.bind(this);
     this._onDeleteHandler = this._onDeleteClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
-    this._dateFrom = data._dateFrom;
-    this._dateTo = data._dateTo;
+    this._onChangePoint = this._onChangePoint.bind(this);
   }
 
   onSubmit(fn) {
@@ -93,7 +97,7 @@ export default class CardEdit extends AbstractComponent {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${this._typeName}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
     
@@ -112,9 +116,9 @@ export default class CardEdit extends AbstractComponent {
     
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-                ${this._typeName.toUpperCase().slice(0, 1) + this._typeName.slice(1)} ${this._type === `activity` ? `in` : `to`}
+                ${this._type.toUpperCase().slice(0, 1) + this._type.slice(1)} ${checkType(this._type) === `activity` ? `in` : `to`}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._destination.name}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${createDestination(CITIES)}
             </datalist>
@@ -159,20 +163,20 @@ export default class CardEdit extends AbstractComponent {
         <section class="event__details">
     
           <section class="event__section  event__section--offers">
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-    
+          ${this._avalibleOffers.offers.length ? `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
-              ${this._options ? getOptions(this._options, `edit`) : ``}
-            </div>
+              ${this._options.length ? getOptions(this._avalibleOffers, `edit`, this._options) : ``}
+            </div>` : ``}
+            
           </section>
     
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${this._description}</p>
+            <p class="event__destination-description">${this._destination.description}</p>
     
             <div class="event__photos-container">
               <div class="event__photos-tape">
-                ${createPhotoElements(this._photos)}
+                ${createPhotoElements(this._destination.pictures)}
               </div>
             </div>
           </section>
@@ -220,6 +224,7 @@ export default class CardEdit extends AbstractComponent {
     });
 
     this._element.querySelector(`.event__type-list`).addEventListener(`click`, this._onChangeType);
+    this._element.querySelector(`.event__input--destination`).addEventListener(`change`, this._onChangePoint);
   }
 
   unbind() {
@@ -233,22 +238,35 @@ export default class CardEdit extends AbstractComponent {
       .addEventListener(`click`, this._onEscKeyUp);
 
     this._element.querySelector(`.event__type-list`).removeEventListener(`click`, this._onChangeType);
+    this._element.querySelector(`.event__input--destination`).removeEventListener(`change`, this._onChangePoint);
 
     document.removeEventListener(`keyup`, this._onEscKeyUp);
   }
 
   _onChangeType(el) {
     if (el.target.classList.contains(`event__type-label`)) {
-      const type = el.target.parentElement.querySelector(`.event__type-input`).value;
-      this._typeName = type;
-      if (type === `restaurant` || type === `sightseeing` || type === `check-in`) {
-        this._type = `activity`;
+      this._type = el.target.parentElement.querySelector(`.event__type-input`).value;
+      this._avalibleOffers = this._commonOffers.length ? this._commonOffers.find((offer) => offer.type === this._type) : [];
+      this._partialUpdate();
+    }
+  }
+
+  _onChangePoint(el) {
+    if (el.target.classList.contains(`event__input--destination`)) {
+      this._destination.name = el.target.value;
+
+      const destinationPoint = this._places.find(place => place.name === this._destination.name);
+      if (destinationPoint) {
+        this._destination.description = destinationPoint.description;
+        this._destination.pictures = destinationPoint.pictures;
       } else {
-        this._type = `transfer`;
+        this._destination.description = ``;
+        this._destination.pictures = [];
       }
       this._partialUpdate();
     }
   }
+
   _partialUpdate() {
     this.unbind();
     const prevElement = this._element;

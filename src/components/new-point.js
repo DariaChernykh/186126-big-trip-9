@@ -29,25 +29,16 @@ const createActivityChoice = (arr) => {
 };
 
 const newType = getType(TYPES);
-const NUM_PHOTOS = 4;
-const getPhotos = (number) => {
-  const photos = [];
-  for (let i = 0; i < number; i++) {
-    photos.push(`http://picsum.photos/300/150?r=${Math.random()}`);
-  }
-  return photos;
-};
 
 export default class NewPoint extends AbstractComponent {
   constructor(board) {
     super();
     this._container = board;
-    this._type = newType.key;
-    this._typeName = newType.name;
+    this.type = newType.key;
+    this.typeName = newType.name;
     this._activity = TYPES.activity;
     this._transfer = TYPES.transfer;
     this._cities = CITIES;
-    this._photos = getPhotos(NUM_PHOTOS);
     this._city = CITIES[getRandomInt(0, CITIES.length - 1)];
     this._onSubmitHandler = this._onSubmitButtonClick.bind(this);
     this._onEscKeyUp = this._onEscUp.bind(this);
@@ -84,7 +75,7 @@ export default class NewPoint extends AbstractComponent {
               <div class="event__type-wrapper">
                 <label class="event__type  event__type-btn" for="event-type-toggle-1">
                   <span class="visually-hidden">Choose event type</span>
-                  <img class="event__type-icon" width="17" height="17" src="img/icons/${this._typeName}.png" alt="Event type icon">
+                  <img class="event__type-icon" width="17" height="17" src="img/icons/${this.typeName}.png" alt="Event type icon">
                 </label>
                  <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -103,7 +94,7 @@ export default class NewPoint extends AbstractComponent {
 
               <div class="event__field-group  event__field-group--destination">
                 <label class="event__label  event__type-output" for="event-destination-1">
-                    ${this._typeName.toUpperCase().slice(0, 1) + this._typeName.slice(1)} ${this._type === `activity` ? `in` : `to`}
+                    ${this.typeName.toUpperCase().slice(0, 1) + this.typeName.slice(1)} ${this.type === `activity` ? `in` : `to`}
                 </label>
                 <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1">
                 <datalist id="destination-list-1">
@@ -154,14 +145,14 @@ export default class NewPoint extends AbstractComponent {
     flatpickr(this._element.querySelector(`#event-start-time-1`), {
       altInput: true,
       allowInput: true,
-      defaultDate: this._dateFrom,
+      defaultDate: `today`,
       enableTime: true,
       altFormat: `d/m/Y H:i`,
     });
     flatpickr(this._element.querySelector(`#event-end-time-1`), {
       altInput: true,
       allowInput: true,
-      defaultDate: this._dateTo,
+      defaultDate: `today`,
       enableTime: true,
       altFormat: `d/m/Y H:i`,
     });
@@ -184,11 +175,11 @@ export default class NewPoint extends AbstractComponent {
   _onChangeType(el) {
     if (el.target.classList.contains(`event__type-label`)) {
       const type = el.target.parentElement.querySelector(`.event__type-input`).value;
-      this._typeName = type;
+      this.typeName = type;
       if (type === `restaurant` || type === `sightseeing` || type === `check-in`) {
-        this._type = `activity`;
+        this.type = `activity`;
       } else {
-        this._type = `transfer`;
+        this.type = `transfer`;
       }
       this._partialUpdate();
     }

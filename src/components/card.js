@@ -12,21 +12,25 @@ const generateDurationstring = (duration) => {
 
   return `${parseInt(hours, 10) ? `${hours}H` : ``} ${parseInt(minutes, 10) ? `${minutes}M` : ``}`.trim();
 };
+const transfer = [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`];
+const checkType = (type) => transfer.findIndex((elem) => elem === type) >= 0 ? `transfer` : `activity`;
 
 export default class Card extends AbstractComponent {
-  constructor(data) {
+  constructor(data, offers) {
     super();
-    this._type = data._type;
-    this._typeName = data._typeName;
-    this._price = data._price;
-    this._options = data._options;
-    this._city = data._city;
+    this._type = data.type;
+    this._price = data.price;
+    this._options = data.options;
+    this._commonOffers = offers;
+    this._destination = {
+      name: data.destination.name,
+    };
     this._onEdit = null;
     this._onEditHandler = this._onEditButtonClick.bind(this);
 
-    this._dateFrom = moment(data._dateFrom);
-    this._dateTo = moment(data._dateTo);
-    this._duration = data._duration;
+    this._dateFrom = moment(data.dateFrom);
+    this._dateTo = moment(data.dateTo);
+    this._duration = data.duration;
   }
 
   _onEditButtonClick() {
@@ -44,9 +48,9 @@ export default class Card extends AbstractComponent {
       <li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${this._typeName}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${this._type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${this._typeName.toUpperCase().slice(0, 1) + this._typeName.slice(1)} ${this._type === `activity` ? `in` : `to`} ${this._city}</h3>
+        <h3 class="event__title">${this._type.toUpperCase().slice(0, 1) + this._type.slice(1)} ${checkType(this._type) === `activity` ? `in` : `to`} ${this._destination.name}</h3>
     
         <div class="event__schedule">
           <p class="event__time">
@@ -61,10 +65,11 @@ export default class Card extends AbstractComponent {
           <span class="event__price-value">${this._price} €</span>
         </p>
     
-        <h4 class="visually-hidden">Offers:</h4>
+        
+        ${this._options.length ? `<h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-         ${this._options ? getOptions(this._options.slice(0, 3), `short`) : ``}
-        </ul>
+         ${this._options.length <= 3 ? getOptions(this._options, `short`) : getOptions(this._options.slice(0, 3), `short`)}
+        </ul>` : ``}        
     
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
