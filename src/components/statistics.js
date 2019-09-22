@@ -78,7 +78,7 @@ export default class Stats extends AbstractComponent {
       if (curIndexPlace === -1) {
         this.placesNames.push(point.destination.name);
         this.placesTime.push(duration);
-      } else {
+      } else {o
         this.placesTime[curIndexPlace] += duration;
       }
 

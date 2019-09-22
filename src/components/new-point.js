@@ -37,7 +37,6 @@ export default class NewPoint extends AbstractComponent {
     this._type = possibleTypes[getRandomInt(0, possibleTypes.length - 1)];
     this._commonOffers = offers;
     this._avalibleOffers = this._commonOffers.length ? this._commonOffers.find((offer) => offer.type === this._type) : [];
-    this._options = this._avalibleOffers;
     this._destination = createDestinationPoint(this._places);
     this._activity = TYPES.activity;
     this._transfer = TYPES.transfer;
@@ -145,14 +144,14 @@ export default class NewPoint extends AbstractComponent {
 
     document.addEventListener(`keyup`, this._onEscKeyUp);
 
-    flatpickr(this._element.querySelector(`#event-start-time-1`), {
+    this._flatpickrDateStart = flatpickr(this._element.querySelector(`#event-start-time-1`), {
       altInput: true,
       allowInput: true,
       defaultDate: `today`,
       enableTime: true,
       altFormat: `d/m/Y H:i`,
     });
-    flatpickr(this._element.querySelector(`#event-end-time-1`), {
+    this._flatpickrDateEnd = flatpickr(this._element.querySelector(`#event-end-time-1`), {
       altInput: true,
       allowInput: true,
       defaultDate: `today`,
@@ -173,6 +172,8 @@ export default class NewPoint extends AbstractComponent {
     this._element.querySelector(`.event__type-list`).removeEventListener(`click`, this._onChangeType);
 
     document.removeEventListener(`keyup`, this._onEscKeyUp);
+    this._flatpickrDateStart.destroy();
+    this._flatpickrDateEnd.destroy();
   }
 
   _onChangeType(el) {
@@ -191,5 +192,14 @@ export default class NewPoint extends AbstractComponent {
     this._container.replaceChild(this._element, prevElement);
     prevElement.remove();
     this.bind();
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._element.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
   }
 }

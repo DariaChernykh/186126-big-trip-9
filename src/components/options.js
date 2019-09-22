@@ -1,5 +1,5 @@
 const checkAcception = (option, pointOption) => {
-  let offer = pointOption.find(val => option.name === val.title);
+  let offer = pointOption.find((val) => option.name === val.title);
   return offer ? offer.accepted : false;
 };
 

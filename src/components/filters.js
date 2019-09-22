@@ -11,7 +11,7 @@ export default class Filters extends AbstractComponent {
   ${FILTERS.reduce((acc, filter) => {
     acc += `
     <div class="trip-filters__filter">
-    <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter}" ${acc === `` ? `checked` : ``}>
+    <input id="filter-${filter}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter}" ${acc === `` ? `checked` : ``}>
     <label class="trip-filters__filter-label" for="filter-${filter}">${filter}</label>
   </div>
     `;

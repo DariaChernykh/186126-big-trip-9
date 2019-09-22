@@ -6,22 +6,23 @@ import moment from "moment";
 const generateDurationString = (duration) => {
   let minutes = Math.floor((duration / (1000 * 60)) % 60);
   let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+  let days = Math.floor((duration / (1000 * 60 * 60 * 24)) % 7);
 
+  days = (days < 10) ? `0` + days : days;
   hours = (hours < 10) ? `0` + hours : hours;
   minutes = (minutes < 10) ? `0` + minutes : minutes;
-
-  return `${parseInt(hours, 10) ? `${hours}H` : ``} ${parseInt(minutes, 10) ? `${minutes}M` : ``}`.trim();
+  return `${parseInt(days, 10) ? `${days}D` : ``} ${parseInt(hours, 10) ? `${hours}H` : ``} ${parseInt(minutes, 10) ? `${minutes}M` : ``}`.trim();
 };
+
 const transfer = [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`];
 const checkType = (type) => transfer.findIndex((elem) => elem === type) >= 0 ? `transfer` : `activity`;
 
 export default class Card extends AbstractComponent {
-  constructor(data, offers) {
+  constructor(data) {
     super();
     this._type = data.type;
     this._price = data.price;
     this._options = data.options;
-    this._commonOffers = offers;
     this._destination = {
       name: data.destination.name,
     };

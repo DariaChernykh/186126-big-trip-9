@@ -207,14 +207,14 @@ export default class CardEdit extends AbstractComponent {
 
     document.addEventListener(`keyup`, this._onEscKeyUp);
 
-    flatpickr(this._element.querySelector(`#event-start-time-${this._id}`), {
+    this._flatpickrDateStart = flatpickr(this._element.querySelector(`#event-start-time-${this._id}`), {
       altInput: true,
       allowInput: true,
       defaultDate: this._dateFrom,
       enableTime: true,
       altFormat: `d/m/Y H:i`,
     });
-    flatpickr(this._element.querySelector(`#event-end-time-${this._id}`), {
+    this._flatpickrDateEnd = flatpickr(this._element.querySelector(`#event-end-time-${this._id}`), {
       altInput: true,
       allowInput: true,
       defaultDate: this._dateTo,
@@ -240,6 +240,8 @@ export default class CardEdit extends AbstractComponent {
     this._element.querySelector(`.event__input--destination`).removeEventListener(`change`, this._onChangePoint);
 
     document.removeEventListener(`keyup`, this._onEscKeyUp);
+    this._flatpickrDateStart.destroy();
+    this._flatpickrDateEnd.destroy();
   }
 
   _onChangeType(el) {
@@ -254,7 +256,7 @@ export default class CardEdit extends AbstractComponent {
     if (el.target.classList.contains(`event__input--destination`)) {
       this._destination.name = el.target.value;
 
-      const destinationPoint = this._places.find(place => place.name === this._destination.name);
+      const destinationPoint = this._places.find((place) => place.name === this._destination.name);
       if (destinationPoint) {
         this._destination.description = destinationPoint.description;
         this._destination.pictures = destinationPoint.pictures;
@@ -274,5 +276,14 @@ export default class CardEdit extends AbstractComponent {
     this._container.replaceChild(this._element, prevElement);
     prevElement.remove();
     this.bind();
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._element.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
   }
 }

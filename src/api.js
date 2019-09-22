@@ -80,4 +80,4 @@ export default class API {
         throw err;
       });
   }
-};
+}

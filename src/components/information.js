@@ -3,7 +3,7 @@ import AbstractComponent from "./abstract-component";
 const returnDate = (start, end) => {
   const MONTHS = [`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`,
     `September`, `October`, `November`, `December`];
-  return `${MONTHS[new Date(start).getMonth()]} ${new Date(start).getDate()}&nbsp;&mdash;&nbsp;${new Date(end).getDate()}`;
+  return `${new Date(start).getDate()} ${MONTHS[new Date(start).getMonth()]}&nbsp;&mdash;&nbsp;${new Date(end).getDate()} ${MONTHS[new Date(end).getMonth()]}`;
 };
 
 export default class Information extends AbstractComponent {
