@@ -2,12 +2,11 @@ import AbstractComponent from "./abstract-component";
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import moment from "moment";
-
+const transfer = [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`];
 
 export default class Stats extends AbstractComponent {
   constructor() {
     super();
-    this.points = ``;
     this.labels = [];
     this.prices = [];
     this.transportNames = [];
@@ -66,27 +65,27 @@ export default class Stats extends AbstractComponent {
     }
 
     arr.forEach((point) => {
-      let curIndex = this.labels.findIndex((elem) => elem === point.type.name);
+      let curIndex = this.labels.findIndex((elem) => elem === point.type);
       if (curIndex === -1) {
-        this.labels.push(point.type.name);
+        this.labels.push(point.type);
         this.prices.push(point.price);
       } else {
         this.prices[curIndex] += point.price;
       }
 
       const duration = Math.round(moment.duration(new moment(point.dateTo).diff(new moment(point.dateFrom))).asHours());
-      const curIndexPlace = this.placesNames.findIndex((elem) => elem === point.city);
+      const curIndexPlace = this.placesNames.findIndex((elem) => elem === point.destination.name);
       if (curIndexPlace === -1) {
-        this.placesNames.push(point.city);
+        this.placesNames.push(point.destination.name);
         this.placesTime.push(duration);
       } else {
         this.placesTime[curIndexPlace] += duration;
       }
 
-      if (point.type.key === `transfer`) {
-        !this.transport.hasOwnProperty(point.type.name) ?
-          this.transport[point.type.name] = 1 :
-          this.transport[point.type.name] += 1;
+      if (transfer.indexOf(point.type) >= 0) {
+        !this.transport.hasOwnProperty(point.type) ?
+          this.transport[point.type] = 1 :
+          this.transport[point.type] += 1;
       }
     });
 
@@ -105,8 +104,6 @@ export default class Stats extends AbstractComponent {
         this.transportTimes.push(this.transport[key]);
       }
     }
-
-    console.log(this.placesNames, this.placesTime);
   }
 
   generateCharts(arr) {

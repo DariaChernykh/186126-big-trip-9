@@ -1,24 +1,30 @@
-export const getOptions = (options, mode) => {
+const checkAcception = (option, pointOption) => {
+  let offer = pointOption.find(val => option.name === val.title);
+  return offer ? offer.accepted : false;
+};
+
+export const getOptions = (options, mode, pointOptions) => {
   if (options.length && mode === `short`) {
-    return options.reduce((acc, val) => {
-      if (val[1].available) {
+    const sortedOptions = options.length <= 3 ? options : options.slice().sort((a, b) => b.accepted - a.accepted).slice(0, 3);
+    return sortedOptions.reduce((acc, val) => {
+      if (val.accepted) {
         acc += `<li class="event__offer">
-        <span class="event__offer-title">${val[1].name}</span>
+        <span class="event__offer-title">${val.title}</span>
         &plus;
-        &euro;&nbsp;<span class="event__offer-price">${val[1].value}</span>
+        &euro;&nbsp;<span class="event__offer-price">${val.price}</span>
       </li>`;
       }
       return acc;
     }, ``);
-  } else if (options.length && mode === `edit`) {
-    return options.reduce((acc, val) => {
+  } else if (options.offers.length && mode === `edit`) {
+    return options.offers.reduce((acc, val, index) => {
       acc += `
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${val[0]}-1" type="checkbox" name="event-offer-${val[0]}" checked>
-        <label class="event__offer-label" for="event-offer-${val[0]}-1">
-          <span class="event__offer-title">${val[1].name}</span>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${options.type}-${index}" type="checkbox" name="event-offer-${options.type}-${index}" ${checkAcception(val, pointOptions) ? `checked` : ``}>
+        <label class="event__offer-label" for="event-offer-${options.type}-${index}">
+          <span class="event__offer-title">${val.title}</span>
           &plus;
-          &euro;&nbsp;<span class="event__offer-price">${val[1].value}</span>
+          &euro;&nbsp;<span class="event__offer-price">${val.price}</span>
         </label>
       </div>
     `;

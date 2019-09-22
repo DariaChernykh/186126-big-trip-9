@@ -1,14 +1,18 @@
 import Card from "../components/card";
 import CardEdit from "../components/card-edit";
+import ModelPoint from "../model-task";
 
 export default class PointController {
-  constructor(container, point, onDataChange, onChangeView) {
+  constructor(container, point, offers, places, api, onDataChange, onChangeView) {
     this._container = container;
     this._point = point;
+    this._offers = offers;
+    this._places = places;
+    this._api = api;
     this._onChangeView = onChangeView;
     this._onDataChange = onDataChange;
-    this._taskComponent = new Card(this._point);
-    this._editTaskComponent = new CardEdit(this._point, this._container);
+    this._taskComponent = new Card(this._point, this._offers);
+    this._editTaskComponent = new CardEdit(this._point, this._container, this._offers, this._places);
     this.init();
   }
 
@@ -36,43 +40,40 @@ export default class PointController {
 
     pointEditComponent.onSubmit(() => {
       const formData = new FormData(pointEditComponent.getElement().querySelector(`.event--edit`));
-      const getOptions = () => {
-        const options = pointEditComponent.getElement().querySelectorAll(`.event__offer-checkbox`);
-        [...options].forEach((option) => {
-          const nameOption = option.name.slice(12);
-          pointEditComponent._options.forEach((value) => {
-            if (value[0] === nameOption && option.checked) {
-              value[1].available = true;
-            }
-            if (value[0] === nameOption && !option.checked) {
-              value[1].available = false;
-            }
+      const getFormOptions = () => {
+        const options = pointEditComponent.getElement().querySelectorAll(`.event__offer-selector`);
+
+
+        pointEditComponent._options = [];
+        [...options].forEach((option, index) => {
+          const accepted = option.querySelector(`.event__offer-checkbox`).checked;
+          pointEditComponent._options.push({
+            title: pointEditComponent._avalibleOffers.offers[index].name,
+            price: pointEditComponent._avalibleOffers.offers[index].price,
+            accepted
           });
         });
         return pointEditComponent._options;
       };
 
-      const getDescription = () => pointEditComponent._description = pointEditComponent.getElement().querySelector(`.event__destination-description`).innerText;
       const dateFrom = new Date(formData.get(`event-start-time`));
       const dateTo = new Date(formData.get(`event-end-time`));
       const entry = {
-        type: {
-          key: pointEditComponent._type,
-          name: pointEditComponent._typeName,
-        },
-        city: formData.get(`event-destination`),
-        price: parseInt(formData.get(`event-price`), 10),
-        description: getDescription(),
-        options: getOptions(),
+        id: pointEditComponent._id,
+        type: pointEditComponent._type,
+        price: parseInt(formData.get(`event-price`) ? formData.get(`event-price`) : 0, 10),
+        options: getFormOptions(),
+        isFavorite: !!formData.get(`event-favorite`),
         dateFrom,
         dateTo,
         duration: dateTo.getTime() - dateFrom.getTime(),
-        activity: pointEditComponent._activity,
-        transfer: pointEditComponent._transfer,
-        cities: pointEditComponent._cities,
-        photos: pointEditComponent._photos,
+        destination: {
+          name: formData.get(`event-destination`),
+          pictures: pointEditComponent._destination.pictures,
+          description: pointEditComponent._destination.description
+        },
       };
-      this._onDataChange(entry, this._point);
+      this._onDataChange(new ModelPoint(ModelPoint.toRAW(entry)), this._point);
       pointEditComponent.unbind();
     });
 
