@@ -1,12 +1,12 @@
 import Card from "../components/card";
 import CardEdit from "../components/card-edit";
+import ModelPoint from "../model-task";
 
 export default class PointController {
   constructor(container, point, offers, places, api, onDataChange, onChangeView) {
     this._container = container;
     this._point = point;
     this._offers = offers;
-    // console.log(this._offers);
     this._places = places;
     this._api = api;
     this._onChangeView = onChangeView;
@@ -43,11 +43,15 @@ export default class PointController {
       const getFormOptions = () => {
         const options = pointEditComponent.getElement().querySelectorAll(`.event__offer-selector`);
 
+
+        pointEditComponent._options = [];
         [...options].forEach((option, index) => {
-          const name = option.querySelector(`.event__offer-title`).innerText;
           const accepted = option.querySelector(`.event__offer-checkbox`).checked;
-          console.log(name, accepted, pointEditComponent);
-          pointEditComponent._options[index].accepted = !!option.checked;
+          pointEditComponent._options.push({
+            title: pointEditComponent._avalibleOffers.offers[index].name,
+            price: pointEditComponent._avalibleOffers.offers[index].price,
+            accepted
+          });
         });
         return pointEditComponent._options;
       };
@@ -55,10 +59,11 @@ export default class PointController {
       const dateFrom = new Date(formData.get(`event-start-time`));
       const dateTo = new Date(formData.get(`event-end-time`));
       const entry = {
+        id: pointEditComponent._id,
         type: pointEditComponent._type,
-        price: parseInt(formData.get(`event-price`), 10),
+        price: parseInt(formData.get(`event-price`) ? formData.get(`event-price`) : 0, 10),
         options: getFormOptions(),
-        isFavorite: formData.get(`event-favorite`),
+        isFavorite: !!formData.get(`event-favorite`),
         dateFrom,
         dateTo,
         duration: dateTo.getTime() - dateFrom.getTime(),
@@ -68,7 +73,7 @@ export default class PointController {
           description: pointEditComponent._destination.description
         },
       };
-      this._onDataChange(entry, this._point);
+      this._onDataChange(new ModelPoint(ModelPoint.toRAW(entry)), this._point);
       pointEditComponent.unbind();
     });
 

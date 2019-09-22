@@ -5,7 +5,8 @@ const checkAcception = (option, pointOption) => {
 
 export const getOptions = (options, mode, pointOptions) => {
   if (options.length && mode === `short`) {
-    return options.reduce((acc, val) => {
+    const sortedOptions = options.length <= 3 ? options : options.slice().sort((a, b) => b.accepted - a.accepted).slice(0, 3);
+    return sortedOptions.reduce((acc, val) => {
       if (val.accepted) {
         acc += `<li class="event__offer">
         <span class="event__offer-title">${val.title}</span>

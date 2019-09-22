@@ -3,7 +3,7 @@ import {createElement} from "../utils";
 import AbstractComponent from "./abstract-component";
 import moment from "moment";
 
-const generateDurationstring = (duration) => {
+const generateDurationString = (duration) => {
   let minutes = Math.floor((duration / (1000 * 60)) % 60);
   let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
 
@@ -58,7 +58,7 @@ export default class Card extends AbstractComponent {
             &mdash;
             <time class="event__end-time" datetime="${this._dateTo.format()}">${this._dateTo.format(`HH:mm`)}</time>
           </p>
-          <p class="event__duration">${generateDurationstring(this._duration)}</p>
+          <p class="event__duration">${generateDurationString(this._duration)}</p>
         </div>
     
         <p class="event__price">
@@ -68,7 +68,7 @@ export default class Card extends AbstractComponent {
         
         ${this._options.length ? `<h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-         ${this._options.length <= 3 ? getOptions(this._options, `short`) : getOptions(this._options.slice(0, 3), `short`)}
+         ${getOptions(this._options, `short`)}
         </ul>` : ``}        
     
         <button class="event__rollup-btn" type="button">
