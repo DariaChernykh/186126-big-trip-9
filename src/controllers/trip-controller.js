@@ -78,6 +78,8 @@ export class TripController {
 
   _reRender() {
     this._api.getPoints().then((points) => {
+
+      this._tripStats.generateCharts(points);
       this._getDaysForPoints(points);
       this._tripStats.updateData(points);
       PRICE_CONTAINER.innerHTML = calcPriceTrip(this._points);
@@ -114,7 +116,7 @@ export class TripController {
   }
 
   init() {
-    if (this._points) {
+    if (this._points.length) {
       HEADER_INFO.prepend(this._information.getElement());
       PRICE_CONTAINER.innerHTML = calcPriceTrip(this._points);
       this._board.appendChild(this._sort.getElement());
@@ -132,13 +134,18 @@ export class TripController {
     } else {
       this._board.appendChild(this._noPoint.getElement());
       this._renderNewPoint();
-      //in developing now.
     }
   }
 
   _renderNewPoint() {
     this._addPointBtn.addEventListener(`click`, () => {
       const newPoint = new NewPoint(this._board, this._places, this._offers);
+      if (!this._points.length) {
+        HEADER_INFO.prepend(this._information.getElement());
+        this._board.removeChild(this._noPoint.getElement());
+        this._board.appendChild(this._sort.getElement());
+        this._board.appendChild(this._daysContainer.getElement());
+      }
       this._sort.getElement().after(newPoint.getElement());
       newPoint.bind();
 
@@ -190,7 +197,6 @@ export class TripController {
           deleteBtn.disabled = false;
           saveBtn.textContent = `Save`;
         };
-
         block();
 
         load(true)

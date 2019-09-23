@@ -3,16 +3,20 @@ import Stats from "./components/statistics";
 import Filters from "./components/filters";
 import {TripController} from "./controllers/trip-controller";
 import API from './api';
+import NoPoint from "./components/no-points";
 
 const HEADER_CONTROLS = document.querySelector(`.trip-controls`);
 const MAIN_CONTAINER = document.querySelector(`.trip-events`);
 const CONTAINER = document.querySelector(`.page-body__container-content`);
+const addPointBtn = document.querySelector(`.trip-main__event-add-btn`);
 
 const AUTHORIZATION = `Basic kTy9gIdsz2317rD`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip`;
+const noPoint = new NoPoint();
 
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
-
+MAIN_CONTAINER.appendChild(noPoint.render());
+addPointBtn.disabled = true;
 api.getDestinations()
   .then((arrPlaces) => {
     api.getPoints()
@@ -22,6 +26,8 @@ api.getDestinations()
             const menu = new Menu();
             const filters = new Filters();
 
+            MAIN_CONTAINER.removeChild(noPoint._element);
+            addPointBtn.disabled = false;
             HEADER_CONTROLS.appendChild(menu.getElement());
             HEADER_CONTROLS.appendChild(filters.getElement());
 

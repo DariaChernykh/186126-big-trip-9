@@ -48,13 +48,13 @@ export default class NewPoint extends AbstractComponent {
 
 
   onSubmit(fn) {
-    this._onEdit = fn;
+    this._onSubmit = fn;
   }
 
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
-    if (typeof this._onEdit === `function`) {
-      this._onEdit();
+    if (typeof this._onSubmit === `function`) {
+      this._onSubmit();
     }
   }
 
