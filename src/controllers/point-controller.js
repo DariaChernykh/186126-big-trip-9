@@ -1,6 +1,7 @@
 import Card from "../components/card";
 import CardEdit from "../components/card-edit";
 import ModelPoint from "../model-task";
+import moment from "moment";
 
 export default class PointController {
   constructor(container, point, offers, places, api, onDataChange, onChangeView) {
@@ -116,17 +117,17 @@ export default class PointController {
         return pointEditComponent._options;
       };
 
-      const dateFrom = new Date(formData.get(`event-start-time`));
-      const dateTo = new Date(formData.get(`event-end-time`));
+      const dateFrom = moment(formData.get(`event-start-time`).slice(0, 16));
+      const dateTo = moment(formData.get(`event-start-time`).slice(19));
       const entry = {
         id: pointEditComponent._id,
         type: pointEditComponent._type,
         price: parseInt(formData.get(`event-price`) ? formData.get(`event-price`) : 0, 10),
         options: getFormOptions(),
         isFavorite: !!formData.get(`event-favorite`),
-        dateFrom,
-        dateTo,
-        duration: dateTo.getTime() - dateFrom.getTime(),
+        dateFrom: dateFrom.format(),
+        dateTo: dateTo.format(),
+        duration: dateTo.millisecond() - dateFrom.millisecond(),
         destination: {
           name: formData.get(`event-destination`),
           pictures: pointEditComponent._destination.pictures,

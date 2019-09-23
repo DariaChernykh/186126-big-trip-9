@@ -2,6 +2,7 @@ import {getOptions} from "./options";
 import {createElement} from "../utils";
 import AbstractComponent from "./abstract-component";
 import flatpickr from "flatpickr";
+import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 
@@ -127,12 +128,12 @@ export default class CardEdit extends AbstractComponent {
             <label class="visually-hidden" for="event-start-time-${this._id}">
               From
             </label>
-            <input class="event__input  event__input--time" id="event-start-time-${this._id}" type="text" name="event-start-time" data-input>
+             <input class="event__input  event__input--time" id="event-start-time-${this._id}" type="text" name="event-start-time" value="18/03/19 00:00" required />
             &mdash;
             <label class="visually-hidden" for="event-end-time-${this._id}">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-${this._id}" type="text" name="event-end-time" data-input>
+            <input class="event__input  event__input--time" id="event-end-time-${this._id}" type="text" name="event-end-time" value="18/03/19 00:00" required />
           </div>
     
           <div class="event__field-group  event__field-group--price">
@@ -207,26 +208,37 @@ export default class CardEdit extends AbstractComponent {
 
     document.addEventListener(`keyup`, this._onEscKeyUp);
 
-    this._flatpickrDateStart = flatpickr(this._element.querySelector(`#event-start-time-${this._id}`), {
+    this._flatpickrDateStartEdit = flatpickr(this._element.querySelector(`#event-start-time-${this._id}`), {
+      plugins: [new rangePlugin({ input: `#event-end-time-${this._id}`})],
       altInput: true,
       allowInput: true,
       defaultDate: this._dateFrom,
       enableTime: true,
       altFormat: `d/m/Y H:i`,
     });
-    this._flatpickrDateEnd = flatpickr(this._element.querySelector(`#event-end-time-${this._id}`), {
-      altInput: true,
-      allowInput: true,
-      defaultDate: this._dateTo,
-      enableTime: true,
-      altFormat: `d/m/Y H:i`,
-    });
+
+    // this._flatpickrDateStart = flatpickr(this._element.querySelector(`#event-start-time-${this._id}`), {
+    //   plugins: [new rangePlugin({ input: `#event-end-time-${this._id}`})],
+    //   altInput: true,
+    //   allowInput: true,
+    //   defaultDate: this._dateFrom,
+    //   enableTime: true,
+    //   altFormat: `d/m/Y H:i`,
+    // });
+    // this._flatpickrDateEnd = flatpickr(this._element.querySelector(`#event-end-time-${this._id}`), {
+    //   altInput: true,
+    //   allowInput: true,
+    //   defaultDate: this._dateTo,
+    //   enableTime: true,
+    //   altFormat: `d/m/Y H:i`,
+    // });
 
     this._element.querySelector(`.event__type-list`).addEventListener(`click`, this._onChangeType);
     this._element.querySelector(`.event__input--destination`).addEventListener(`change`, this._onChangePoint);
   }
 
   unbind() {
+    this._flatpickrDateStartEdit.destroy();
     this._element.querySelector(`form`)
       .removeEventListener(`submit`, this._onSubmitHandler);
 
@@ -240,8 +252,6 @@ export default class CardEdit extends AbstractComponent {
     this._element.querySelector(`.event__input--destination`).removeEventListener(`change`, this._onChangePoint);
 
     document.removeEventListener(`keyup`, this._onEscKeyUp);
-    this._flatpickrDateStart.destroy();
-    this._flatpickrDateEnd.destroy();
   }
 
   _onChangeType(el) {

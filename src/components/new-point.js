@@ -1,5 +1,6 @@
 import AbstractComponent from "./abstract-component";
 import flatpickr from "flatpickr";
+import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 import {getRandomInt} from "../data";
 
 const TYPES = {
@@ -108,12 +109,12 @@ export default class NewPoint extends AbstractComponent {
                 <label class="visually-hidden" for="event-start-time-1">
                   From
                 </label>
-                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 00:00" required>
+                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 00:00" required />
                 &mdash;
                 <label class="visually-hidden" for="event-end-time-1">
                   To
                 </label>
-                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 00:00" required>
+                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 00:00" required />
               </div>
 
               <div class="event__field-group  event__field-group--price">
@@ -145,13 +146,7 @@ export default class NewPoint extends AbstractComponent {
     document.addEventListener(`keyup`, this._onEscKeyUp);
 
     this._flatpickrDateStart = flatpickr(this._element.querySelector(`#event-start-time-1`), {
-      altInput: true,
-      allowInput: true,
-      defaultDate: `today`,
-      enableTime: true,
-      altFormat: `d/m/Y H:i`,
-    });
-    this._flatpickrDateEnd = flatpickr(this._element.querySelector(`#event-end-time-1`), {
+      plugins: [new rangePlugin({ input: `#event-end-time-1`})],
       altInput: true,
       allowInput: true,
       defaultDate: `today`,
@@ -163,6 +158,7 @@ export default class NewPoint extends AbstractComponent {
   }
 
   unbind() {
+    this._flatpickrDateStart.destroy();
     this._element
       .removeEventListener(`submit`, this._onSubmitHandler);
 
@@ -172,8 +168,6 @@ export default class NewPoint extends AbstractComponent {
     this._element.querySelector(`.event__type-list`).removeEventListener(`click`, this._onChangeType);
 
     document.removeEventListener(`keyup`, this._onEscKeyUp);
-    this._flatpickrDateStart.destroy();
-    this._flatpickrDateEnd.destroy();
   }
 
   _onChangeType(el) {

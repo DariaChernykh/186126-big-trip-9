@@ -152,8 +152,8 @@ export class TripController {
       newPoint.onSubmit(() => {
         newPoint.getElement().style = `border: none`;
         const formData = new FormData(newPoint.getElement());
-        const dateFrom = moment(formData.get(`event-start-time`));
-        const dateTo = moment(formData.get(`event-end-time`));
+        const dateFrom = moment(formData.get(`event-start-time`).slice(0, 16));
+        const dateTo = moment(formData.get(`event-start-time`).slice(19));
         const entry = {
           id: this._points.length,
           price: parseInt(formData.get(`event-price`) ? formData.get(`event-price`) : 0, 10),
@@ -169,7 +169,6 @@ export class TripController {
             description: newPoint._destination.description
           },
         };
-
         const load = (isSuccess) => {
           return new Promise((res, rej) => {
             setTimeout(isSuccess ? res : rej, 1500);
