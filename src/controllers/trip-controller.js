@@ -50,7 +50,7 @@ export class TripController {
           this._reRender(this._points);
         })
         .catch((err) => {
-          console.error(`fetch error: ${err}`);
+          throw err;
         });
 
     } else if (oldData === null) {
@@ -60,7 +60,7 @@ export class TripController {
           this._reRender(this._points);
         })
         .catch((err) => {
-          console.error(`fetch error: ${err}`);
+          throw err;
         });
 
     } else {
@@ -70,7 +70,7 @@ export class TripController {
           this._reRender(this._points);
         })
         .catch((err) => {
-          console.error(`fetch error: ${err}`);
+          throw err;
         });
     }
     this._tripStats.updateData(this._points);
@@ -180,7 +180,9 @@ export class TripController {
           const saveBtn = newPoint.getElement().querySelector(`.event__save-btn`);
           const deleteBtn = newPoint.getElement().querySelector(`.event__reset-btn`);
 
-          inputs.forEach((input) => input.disabled = true);
+          inputs.forEach((input) => {
+            input.disabled = true;
+          });
           saveBtn.disabled = true;
           deleteBtn.disabled = true;
           saveBtn.textContent = `Saving...`;
@@ -191,7 +193,9 @@ export class TripController {
           const saveBtn = newPoint.getElement().querySelector(`.event__save-btn`);
           const deleteBtn = newPoint.getElement().querySelector(`.event__reset-btn`);
 
-          inputs.forEach((input) => input.disabled = false);
+          inputs.forEach((input) => {
+            input.disabled = false;
+          });
           saveBtn.disabled = false;
           deleteBtn.disabled = false;
           saveBtn.textContent = `Save`;
@@ -234,7 +238,9 @@ export class TripController {
     if (!evt.target.classList.contains(`trip-sort__btn`)) {
       return;
     }
-    evt.target.parentElement.parentElement.querySelectorAll(`input`).forEach((input) => input.checked = false);
+    evt.target.parentElement.parentElement.querySelectorAll(`input`).forEach((input) => {
+      input.checked = false;
+    });
     evt.target.parentElement.querySelector(`input`).checked = true;
     this._daysContainer.getElement().innerHTML = ``;
     switch (evt.target.control.value) {

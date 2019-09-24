@@ -60,4 +60,6 @@ api.getDestinations()
             });
           });
       });
-  }).catch((err) => console.error(`!!!! ` + err));
+  }).catch((err) => {
+    throw err;
+  });

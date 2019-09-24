@@ -27,35 +27,35 @@ export default class ModelPoint {
 
   toRAW() {
     return {
-      id: this.id,
-      base_price: this.price,
-      date_from: moment(this.dateFrom).format(`YYYY-MM-DDTHH:mm:ss.sssZZ`),
-      date_to: moment(this.dateTo).format(`YYYY-MM-DDTHH:mm:ss.sssZZ`),
-      destination: {
+      "id": this.id,
+      "base_price": this.price,
+      "date_from": moment(this.dateFrom).format(`YYYY-MM-DDTHH:mm:ss.sssZZ`),
+      "date_to": moment(this.dateTo).format(`YYYY-MM-DDTHH:mm:ss.sssZZ`),
+      "destination": {
         description: this.destination.description,
         name: this.destination.name,
         pictures: this.destination.pictures
       },
-      is_favorite: this.isFavorite,
-      offers: this.options,
-      type: this.type
+      "is_favorite": this.isFavorite,
+      "offers": this.options,
+      "type": this.type,
     };
   }
 
   static toRAW(data) {
     return {
-      id: `${data.id}`,
-      base_price: data.price,
-      date_from: moment(data.dateFrom).format(`YYYY-MM-DDTHH:mm:ss.sssZZ`),
-      date_to: moment(data.dateTo).format(`YYYY-MM-DDTHH:mm:ss.sssZZ`),
-      destination: {
+      "id": `${data.id}`,
+      "base_price": data.price,
+      "date_from": moment(data.dateFrom).format(`YYYY-MM-DDTHH:mm:ss.sssZZ`),
+      "date_to": moment(data.dateTo).format(`YYYY-MM-DDTHH:mm:ss.sssZZ`),
+      "destination": {
         description: data.destination.description,
         name: data.destination.name,
         pictures: data.destination.pictures,
       },
-      is_favorite: data.isFavorite,
-      offers: data.options,
-      type: data.type
+      "is_favorite": data.isFavorite,
+      "offers": data.options,
+      "type": data.type,
     };
   }
 }

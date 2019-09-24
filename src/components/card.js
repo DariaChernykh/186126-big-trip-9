@@ -6,7 +6,7 @@ import moment from "moment";
 const generateDurationString = (duration) => {
   let minutes = Math.floor((duration / (1000 * 60)) % 60);
   let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
-  let days = Math.floor((duration / (1000 * 60 * 60 * 24)) % 7);
+  let days = Math.floor((duration / (1000 * 60 * 60 * 24)));
 
   days = (days < 10) ? `0` + days : days;
   hours = (hours < 10) ? `0` + hours : hours;

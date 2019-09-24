@@ -30,12 +30,16 @@ export default class PointController {
     const saveBtn = this._editTaskComponent.getElement().querySelector(`.event__save-btn`);
     const deleteBtn = this._editTaskComponent.getElement().querySelector(`.event__reset-btn`);
 
-    inputs.forEach((input) => input.disabled = true);
+    inputs.forEach((input) => {
+      input.disabled = true;
+    });
     saveBtn.disabled = true;
     deleteBtn.disabled = true;
-    type === `save` ?
-      saveBtn.textContent = `Saving...` :
+    if (type === `save`) {
+      saveBtn.textContent = `Saving...`;
+    } else {
       deleteBtn.textContent = `Deleting...`;
+    }
   }
 
   _commonUnBlocking(type) {
@@ -43,12 +47,16 @@ export default class PointController {
     const saveBtn = this._editTaskComponent.getElement().querySelector(`.event__save-btn`);
     const deleteBtn = this._editTaskComponent.getElement().querySelector(`.event__reset-btn`);
 
-    inputs.forEach((input) => input.disabled = false);
+    inputs.forEach((input) => {
+      input.disabled = false;
+    });
     saveBtn.disabled = false;
     deleteBtn.disabled = false;
-    type === `save` ?
-      saveBtn.textContent = `Save` :
+    if (type === `save`) {
+      saveBtn.textContent = `Save`;
+    } else {
       deleteBtn.textContent = `Delete`;
+    }
   }
 
   init() {

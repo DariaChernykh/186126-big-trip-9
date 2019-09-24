@@ -128,12 +128,12 @@ export default class CardEdit extends AbstractComponent {
             <label class="visually-hidden" for="event-start-time-${this._id}">
               From
             </label>
-             <input class="event__input  event__input--time" id="event-start-time-${this._id}" type="text" name="event-start-time" value="18/03/19 00:00" required />
+             <input class="event__input  event__input--time" id="event-start-time-${this._id}" type="text" name="event-start-time" required />
             &mdash;
             <label class="visually-hidden" for="event-end-time-${this._id}">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-${this._id}" type="text" name="event-end-time" value="18/03/19 00:00" required />
+            <input class="event__input  event__input--time" id="event-end-time-${this._id}" type="text" name="event-end-time" required />
           </div>
     
           <div class="event__field-group  event__field-group--price">
@@ -209,29 +209,15 @@ export default class CardEdit extends AbstractComponent {
     document.addEventListener(`keyup`, this._onEscKeyUp);
 
     this._flatpickrDateStartEdit = flatpickr(this._element.querySelector(`#event-start-time-${this._id}`), {
-      plugins: [new rangePlugin({ input: `#event-end-time-${this._id}`})],
+      plugins: [rangePlugin({
+        input: this._element.querySelector(`#event-end-time-${this._id}`)
+      })],
       altInput: true,
       allowInput: true,
-      defaultDate: this._dateFrom,
+      defaultDate: [this._dateFrom, this._dateTo],
       enableTime: true,
       altFormat: `d/m/Y H:i`,
     });
-
-    // this._flatpickrDateStart = flatpickr(this._element.querySelector(`#event-start-time-${this._id}`), {
-    //   plugins: [new rangePlugin({ input: `#event-end-time-${this._id}`})],
-    //   altInput: true,
-    //   allowInput: true,
-    //   defaultDate: this._dateFrom,
-    //   enableTime: true,
-    //   altFormat: `d/m/Y H:i`,
-    // });
-    // this._flatpickrDateEnd = flatpickr(this._element.querySelector(`#event-end-time-${this._id}`), {
-    //   altInput: true,
-    //   allowInput: true,
-    //   defaultDate: this._dateTo,
-    //   enableTime: true,
-    //   altFormat: `d/m/Y H:i`,
-    // });
 
     this._element.querySelector(`.event__type-list`).addEventListener(`click`, this._onChangeType);
     this._element.querySelector(`.event__input--destination`).addEventListener(`change`, this._onChangePoint);
