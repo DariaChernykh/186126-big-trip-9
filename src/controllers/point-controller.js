@@ -1,6 +1,6 @@
 import Card from "../components/card";
 import CardEdit from "../components/card-edit";
-import ModelPoint from "../model-task";
+import ModelPoint from "../model-point";
 import moment from "moment";
 
 export default class PointController {

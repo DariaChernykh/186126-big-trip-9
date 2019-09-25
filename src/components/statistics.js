@@ -19,6 +19,7 @@ export default class Stats extends AbstractComponent {
     this.moneyCtx = document.querySelector(`.statistics__chart--money`);
     this.transportCtx = document.querySelector(`.statistics__chart--transport`);
     this.timeCtx = document.querySelector(`.statistics__chart--time`);
+
   }
   getTemplate() {
     return `<section class="statistics">
@@ -39,6 +40,7 @@ export default class Stats extends AbstractComponent {
   }
 
   updateData(arr) {
+    console.log(arr);
     this._prepareData(arr);
     this.moneyChart.data.datasets[0].data = this.prices;
     this.moneyChart.data.labels = this.labels;
@@ -50,6 +52,7 @@ export default class Stats extends AbstractComponent {
     this.moneyChart.update();
     this.transportChart.update();
     this.timeChart.update();
+    console.log(this.moneyChart.data);
   }
 
   _prepareData(arr) {

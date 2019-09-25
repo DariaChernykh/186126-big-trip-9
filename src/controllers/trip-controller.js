@@ -5,7 +5,7 @@ import PointController from "./point-controller";
 import NewPoint from "../components/new-point";
 import Stats from "../components/statistics";
 import moment from "moment";
-import ModelPoint from "../model-task";
+import ModelPoint from "../model-point";
 import Information from "../components/information";
 import NoPoint from "../components/no-points";
 
@@ -54,7 +54,7 @@ export class TripController {
         });
 
     } else if (oldData === null) {
-      this._api.createPoint({point: newData.toRAW()})
+      this._api.createPoint({data: newData.toRAW()})
         .then(() => {
           this._points.push(newData);
           this._reRender(this._points);
@@ -73,12 +73,10 @@ export class TripController {
           throw err;
         });
     }
-    this._tripStats.updateData(this._points);
   }
 
   _reRender() {
     this._api.getPoints().then((points) => {
-
       this._tripStats.generateCharts(points);
       this._getDaysForPoints(points);
       this._tripStats.updateData(points);
