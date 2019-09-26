@@ -1,5 +1,5 @@
 import {getOptions} from "./options";
-import {createElement} from "../utils";
+import {createElement, checkType} from "../utils";
 import AbstractComponent from "./abstract-component";
 import moment from "moment";
 
@@ -13,9 +13,6 @@ const generateDurationString = (duration) => {
   minutes = (minutes < 10) ? `0` + minutes : minutes;
   return `${parseInt(days, 10) ? `${days}D` : ``} ${parseInt(hours, 10) ? `${hours}H` : ``} ${parseInt(minutes, 10) ? `${minutes}M` : ``}`.trim();
 };
-
-const transfer = [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`];
-const checkType = (type) => transfer.findIndex((elem) => elem === type) >= 0 ? `transfer` : `activity`;
 
 export default class Card extends AbstractComponent {
   constructor(data) {
