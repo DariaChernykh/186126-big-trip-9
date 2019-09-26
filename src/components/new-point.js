@@ -1,5 +1,6 @@
 import AbstractComponent from "./abstract-component";
 import flatpickr from "flatpickr";
+import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 import {getRandomInt} from "../data";
 
 const TYPES = {
@@ -37,7 +38,6 @@ export default class NewPoint extends AbstractComponent {
     this._type = possibleTypes[getRandomInt(0, possibleTypes.length - 1)];
     this._commonOffers = offers;
     this._avalibleOffers = this._commonOffers.length ? this._commonOffers.find((offer) => offer.type === this._type) : [];
-    this._options = this._avalibleOffers;
     this._destination = createDestinationPoint(this._places);
     this._activity = TYPES.activity;
     this._transfer = TYPES.transfer;
@@ -47,15 +47,14 @@ export default class NewPoint extends AbstractComponent {
     this._onChangeType = this._onChangeType.bind(this);
   }
 
-
   onSubmit(fn) {
-    this._onEdit = fn;
+    this._onSubmit = fn;
   }
 
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
-    if (typeof this._onEdit === `function`) {
-      this._onEdit();
+    if (typeof this._onSubmit === `function`) {
+      this._onSubmit();
     }
   }
 
@@ -109,12 +108,12 @@ export default class NewPoint extends AbstractComponent {
                 <label class="visually-hidden" for="event-start-time-1">
                   From
                 </label>
-                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 00:00" required>
+                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" required />
                 &mdash;
                 <label class="visually-hidden" for="event-end-time-1">
                   To
                 </label>
-                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 00:00" required>
+                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" required />
               </div>
 
               <div class="event__field-group  event__field-group--price">
@@ -145,17 +144,11 @@ export default class NewPoint extends AbstractComponent {
 
     document.addEventListener(`keyup`, this._onEscKeyUp);
 
-    flatpickr(this._element.querySelector(`#event-start-time-1`), {
+    this._flatpickrDateStart = flatpickr(this._element.querySelector(`#event-start-time-1`), {
+      plugins: [rangePlugin({input: `#event-end-time-1`})],
       altInput: true,
       allowInput: true,
-      defaultDate: `today`,
-      enableTime: true,
-      altFormat: `d/m/Y H:i`,
-    });
-    flatpickr(this._element.querySelector(`#event-end-time-1`), {
-      altInput: true,
-      allowInput: true,
-      defaultDate: `today`,
+      defaultDate: [`today`, `today`],
       enableTime: true,
       altFormat: `d/m/Y H:i`,
     });
@@ -164,6 +157,7 @@ export default class NewPoint extends AbstractComponent {
   }
 
   unbind() {
+    this._flatpickrDateStart.destroy();
     this._element
       .removeEventListener(`submit`, this._onSubmitHandler);
 
@@ -191,5 +185,14 @@ export default class NewPoint extends AbstractComponent {
     this._container.replaceChild(this._element, prevElement);
     prevElement.remove();
     this.bind();
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._element.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
   }
 }

@@ -7,6 +7,7 @@ import Stats from "../components/statistics";
 import moment from "moment";
 import ModelPoint from "../model-task";
 import Information from "../components/information";
+import NoPoint from "../components/no-points";
 
 const HEADER_INFO = document.querySelector(`.trip-info`);
 const PRICE_CONTAINER = document.querySelector(`.trip-info__cost-value`);
@@ -23,6 +24,7 @@ export class TripController {
     this._tripStats = new Stats();
     this._daysContainer = new DaysContainer();
     this._information = new Information(this._points);
+    this._noPoint = new NoPoint();
     this._subscriptions = [];
     this._onChangeView = this._onChangeView.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
@@ -48,7 +50,7 @@ export class TripController {
           this._reRender(this._points);
         })
         .catch((err) => {
-          console.error(`fetch error: ${err}`);
+          throw err;
         });
 
     } else if (oldData === null) {
@@ -58,7 +60,7 @@ export class TripController {
           this._reRender(this._points);
         })
         .catch((err) => {
-          console.error(`fetch error: ${err}`);
+          throw err;
         });
 
     } else {
@@ -68,23 +70,27 @@ export class TripController {
           this._reRender(this._points);
         })
         .catch((err) => {
-          console.error(`fetch error: ${err}`);
+          throw err;
         });
     }
     this._tripStats.updateData(this._points);
   }
 
-  _reRender(points) {
-    this._getDaysForPoints(points);
-    this._tripStats.updateData(points);
-    PRICE_CONTAINER.innerHTML = calcPriceTrip(this._points);
+  _reRender() {
+    this._api.getPoints().then((points) => {
 
-    const prevElement = this._information._element;
-    this._information._element = null;
-    this._information = new Information(points);
-    this._information._element = this._information.getElement();
-    HEADER_INFO.replaceChild(this._information._element, prevElement);
-    prevElement.remove();
+      this._tripStats.generateCharts(points);
+      this._getDaysForPoints(points);
+      this._tripStats.updateData(points);
+      PRICE_CONTAINER.innerHTML = calcPriceTrip(this._points);
+
+      const prevElement = this._information._element;
+      this._information._element = null;
+      this._information = new Information(points);
+      this._information._element = this._information.getElement();
+      HEADER_INFO.replaceChild(this._information._element, prevElement);
+      prevElement.remove();
+    });
   }
 
   _getDaysForPoints(arr) {
@@ -102,36 +108,52 @@ export class TripController {
 
     arr.forEach((point) => {
       const dayOfPoint = new Date(point.dateFrom).getDate();
-      const test = listUniqDays.findIndex((elem) => new Date(elem).getDate() === dayOfPoint);
-      const dayForPoint = this._daysContainer.getElement().querySelectorAll(`.trip-events__list`)[test];
+      const findIndexOfDay = listUniqDays.findIndex((elem) => new Date(elem).getDate() === dayOfPoint);
+      const dayForPoint = this._daysContainer.getElement().querySelectorAll(`.trip-events__list`)[findIndexOfDay];
 
       this._renderPoint(point, dayForPoint);
     });
   }
 
   init() {
-    HEADER_INFO.prepend(this._information.getElement());
-    PRICE_CONTAINER.innerHTML = calcPriceTrip(this._points);
-    this._board.appendChild(this._sort.getElement());
-    this._board.appendChild(this._daysContainer.getElement());
-    this._getDaysForPoints(this._points);
-    this._tripStats.generateCharts(this._points);
+    if (this._points.length) {
+      HEADER_INFO.prepend(this._information.getElement());
+      PRICE_CONTAINER.innerHTML = calcPriceTrip(this._points);
+      this._board.appendChild(this._sort.getElement());
+      this._board.appendChild(this._daysContainer.getElement());
+      this._getDaysForPoints(this._points);
+      this._tripStats.generateCharts(this._points);
 
-    this._sort.getElement()
-      .addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
+      this._sort.getElement()
+        .addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
 
-    this._filters
-      .addEventListener(`click`, (evt) => this._onFilterClick(evt));
+      this._filters
+        .addEventListener(`click`, (evt) => this._onFilterClick(evt));
 
+      this._renderNewPoint();
+    } else {
+      this._board.appendChild(this._noPoint.getElement());
+      this._renderNewPoint();
+    }
+  }
+
+  _renderNewPoint() {
     this._addPointBtn.addEventListener(`click`, () => {
       const newPoint = new NewPoint(this._board, this._places, this._offers);
+      if (!this._points.length) {
+        HEADER_INFO.prepend(this._information.getElement());
+        this._board.removeChild(this._noPoint.getElement());
+        this._board.appendChild(this._sort.getElement());
+        this._board.appendChild(this._daysContainer.getElement());
+      }
       this._sort.getElement().after(newPoint.getElement());
       newPoint.bind();
 
       newPoint.onSubmit(() => {
+        newPoint.getElement().style = `border: none`;
         const formData = new FormData(newPoint.getElement());
-        const dateFrom = moment(formData.get(`event-start-time`));
-        const dateTo = moment(formData.get(`event-end-time`));
+        const dateFrom = moment(formData.get(`event-start-time`).slice(0, 16));
+        const dateTo = moment(formData.get(`event-start-time`).slice(19));
         const entry = {
           id: this._points.length,
           price: parseInt(formData.get(`event-price`) ? formData.get(`event-price`) : 0, 10),
@@ -147,8 +169,50 @@ export class TripController {
             description: newPoint._destination.description
           },
         };
-        this._onDataChange(new ModelPoint(ModelPoint.toRAW(entry)), null);
-        newPoint.unrender();
+        const load = (isSuccess) => {
+          return new Promise((res, rej) => {
+            setTimeout(isSuccess ? res : rej, 1500);
+          });
+        };
+
+        const block = () => {
+          const inputs = newPoint.getElement().querySelectorAll(`input`);
+          const saveBtn = newPoint.getElement().querySelector(`.event__save-btn`);
+          const deleteBtn = newPoint.getElement().querySelector(`.event__reset-btn`);
+
+          inputs.forEach((input) => {
+            input.disabled = true;
+          });
+          saveBtn.disabled = true;
+          deleteBtn.disabled = true;
+          saveBtn.textContent = `Saving...`;
+        };
+
+        const unblock = () => {
+          const inputs = newPoint.getElement().querySelectorAll(`input`);
+          const saveBtn = newPoint.getElement().querySelector(`.event__save-btn`);
+          const deleteBtn = newPoint.getElement().querySelector(`.event__reset-btn`);
+
+          inputs.forEach((input) => {
+            input.disabled = false;
+          });
+          saveBtn.disabled = false;
+          deleteBtn.disabled = false;
+          saveBtn.textContent = `Save`;
+        };
+        block();
+
+        load(true)
+          .then(() => {
+            unblock();
+            this._onDataChange(new ModelPoint(ModelPoint.toRAW(entry)), null);
+            newPoint.unrender();
+          })
+          .catch(() => {
+            newPoint.shake();
+            newPoint.getElement().style = `border: 2px solid red`;
+            unblock();
+          });
       });
 
       newPoint.onEscape(() => {
@@ -158,7 +222,9 @@ export class TripController {
   }
 
   _renderPoint(point, parent) {
-    return new PointController(parent, point, this._offers, this._places, this._api, this._onDataChange, this._onChangeView);
+    const pointController = new PointController(parent, point, this._offers, this._places, this._api, this._onDataChange, this._onChangeView);
+
+    this._subscriptions.push(pointController.setDefaultView.bind(pointController));
   }
 
   _createOneDay() {
@@ -172,7 +238,9 @@ export class TripController {
     if (!evt.target.classList.contains(`trip-sort__btn`)) {
       return;
     }
-    evt.target.parentElement.parentElement.querySelectorAll(`input`).forEach(input => input.checked = false);
+    evt.target.parentElement.parentElement.querySelectorAll(`input`).forEach((input) => {
+      input.checked = false;
+    });
     evt.target.parentElement.querySelector(`input`).checked = true;
     this._daysContainer.getElement().innerHTML = ``;
     switch (evt.target.control.value) {
@@ -195,11 +263,7 @@ export class TripController {
       return;
     }
     this._daysContainer.getElement().innerHTML = ``;
-    evt.target.parentElement.parentElement.querySelectorAll(`.trip-filters__filter-input`).forEach(input => input.checked = false);
-
     const input = evt.target.parentElement.querySelector(`.trip-filters__filter-input`);
-    console.log(input);
-    input.checked = true;
     switch (input.value) {
       case `future`:
         const futurePoints = this._points.slice().filter((point) => new Date(point.dateFrom).getTime() > new Date().getTime());
