@@ -1,23 +1,10 @@
 import AbstractComponent from "./abstract-component";
 import flatpickr from "flatpickr";
 import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
-import {getRandomInt} from "../data";
-
-const TYPES = {
-  'transfer': [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
-  'activity': [`restaurant`, `sightseeing`, `check-in`]
-};
+import {checkType, getRandomInt, createActivityChoice, createDestination} from "../utils";
+import {TYPES} from "../data";
 
 const possibleTypes = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
-const createDestination = (arr) => arr.reduce((acc, value) => acc + `<option value="${value.name}"></option>`, ``);
-
-
-const createActivityChoice = (arr) => {
-  return arr.reduce((acc, value) => acc + `<div class="event__type-item">
-                  <input id="event-type-${value}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${value}">
-                  <label class="event__type-label  event__type-label--${value}" for="event-type-${value}-1">${value.toUpperCase().slice(0, 1) + value.slice(1)}</label>
-                </div>`, ``);
-};
 
 const createDestinationPoint = (arr) => {
   const point = arr[getRandomInt(0, arr.length - 1)];
@@ -27,8 +14,6 @@ const createDestinationPoint = (arr) => {
     description: point.description
   };
 };
-
-const checkType = (type) => TYPES.transfer.findIndex((elem) => elem === type) >= 0 ? `transfer` : `activity`;
 
 export default class NewPoint extends AbstractComponent {
   constructor(board, places, offers) {
@@ -189,10 +174,9 @@ export default class NewPoint extends AbstractComponent {
 
   shake() {
     const ANIMATION_TIMEOUT = 600;
-    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
-
+    this._element.classList.add(`shake`);
     setTimeout(() => {
-      this._element.style.animation = ``;
+      this._element.classList.remove(`shake`);
     }, ANIMATION_TIMEOUT);
   }
 }

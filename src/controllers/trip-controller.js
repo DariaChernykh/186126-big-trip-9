@@ -5,7 +5,7 @@ import PointController from "./point-controller";
 import NewPoint from "../components/new-point";
 import Stats from "../components/statistics";
 import moment from "moment";
-import ModelPoint from "../model-task";
+import ModelPoint from "../model-point";
 import Information from "../components/information";
 import NoPoint from "../components/no-points";
 
@@ -54,8 +54,11 @@ export class TripController {
         });
 
     } else if (oldData === null) {
-      this._api.createPoint({point: newData.toRAW()})
+      this._api.createPoint({data: newData.toRAW()})
         .then(() => {
+          if (this._points.length === 0) {
+            this._tripStats.generateCharts(this._points);
+          }
           this._points.push(newData);
           this._reRender(this._points);
         })
@@ -73,15 +76,11 @@ export class TripController {
           throw err;
         });
     }
-    this._tripStats.updateData(this._points);
   }
 
   _reRender() {
     this._api.getPoints().then((points) => {
-
-      this._tripStats.generateCharts(points);
       this._getDaysForPoints(points);
-      this._tripStats.updateData(points);
       PRICE_CONTAINER.innerHTML = calcPriceTrip(this._points);
 
       const prevElement = this._information._element;
@@ -90,6 +89,7 @@ export class TripController {
       this._information._element = this._information.getElement();
       HEADER_INFO.replaceChild(this._information._element, prevElement);
       prevElement.remove();
+      this._tripStats.updateData(points);
     });
   }
 
@@ -169,17 +169,18 @@ export class TripController {
             description: newPoint._destination.description
           },
         };
+
         const load = (isSuccess) => {
           return new Promise((res, rej) => {
             setTimeout(isSuccess ? res : rej, 1500);
           });
         };
 
-        const block = () => {
-          const inputs = newPoint.getElement().querySelectorAll(`input`);
-          const saveBtn = newPoint.getElement().querySelector(`.event__save-btn`);
-          const deleteBtn = newPoint.getElement().querySelector(`.event__reset-btn`);
+        const inputs = newPoint.getElement().querySelectorAll(`input`);
+        const saveBtn = newPoint.getElement().querySelector(`.event__save-btn`);
+        const deleteBtn = newPoint.getElement().querySelector(`.event__reset-btn`);
 
+        const block = () => {
           inputs.forEach((input) => {
             input.disabled = true;
           });
@@ -189,10 +190,6 @@ export class TripController {
         };
 
         const unblock = () => {
-          const inputs = newPoint.getElement().querySelectorAll(`input`);
-          const saveBtn = newPoint.getElement().querySelector(`.event__save-btn`);
-          const deleteBtn = newPoint.getElement().querySelector(`.event__reset-btn`);
-
           inputs.forEach((input) => {
             input.disabled = false;
           });
@@ -202,7 +199,7 @@ export class TripController {
         };
         block();
 
-        load(true)
+        load(load)
           .then(() => {
             unblock();
             this._onDataChange(new ModelPoint(ModelPoint.toRAW(entry)), null);

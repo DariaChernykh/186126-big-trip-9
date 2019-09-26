@@ -1,30 +1,17 @@
 import {getOptions} from "./options";
-import {createElement} from "../utils";
+import {createElement, checkType, createActivityChoice, createDestination} from "../utils";
 import AbstractComponent from "./abstract-component";
 import flatpickr from "flatpickr";
 import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
-
-const TYPES = {
-  'transfer': [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
-  'activity': [`restaurant`, `sightseeing`, `check-in`]
-};
-
-const checkType = (type) => TYPES.transfer.findIndex((elem) => elem === type) >= 0 ? `transfer` : `activity`;
+import {TYPES} from "../data";
 
 const createPhotoElements = (arr) => {
   if (!arr) {
     return ``;
   }
   return arr.reduce((acc, value) => acc + `<img class="event__photo" src="${value.src}" alt="${value.description}">`, ``);
-};
-const createDestination = (arr) => arr.reduce((acc, value) => acc + `<option value="${value.name}"></option>`, ``);
-const createActivityChoice = (arr) => {
-  return arr.reduce((acc, value) => acc + `<div class="event__type-item">
-                  <input id="event-type-${value}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${value}">
-                  <label class="event__type-label  event__type-label--${value}" for="event-type-${value}-1">${value.toUpperCase().slice(0, 1) + value.slice(1)}</label>
-                </div>`, ``);
 };
 
 export default class CardEdit extends AbstractComponent {
@@ -276,10 +263,9 @@ export default class CardEdit extends AbstractComponent {
 
   shake() {
     const ANIMATION_TIMEOUT = 600;
-    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
-
+    this._element.classList.add(`shake`);
     setTimeout(() => {
-      this._element.style.animation = ``;
+      this._element.classList.remove(`shake`);
     }, ANIMATION_TIMEOUT);
   }
 }

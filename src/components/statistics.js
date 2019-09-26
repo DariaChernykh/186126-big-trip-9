@@ -19,6 +19,7 @@ export default class Stats extends AbstractComponent {
     this.moneyCtx = document.querySelector(`.statistics__chart--money`);
     this.transportCtx = document.querySelector(`.statistics__chart--transport`);
     this.timeCtx = document.querySelector(`.statistics__chart--time`);
+
   }
   getTemplate() {
     return `<section class="statistics">
@@ -76,7 +77,7 @@ export default class Stats extends AbstractComponent {
 
       const duration = Math.round(moment.duration(moment(point.dateTo).diff(moment(point.dateFrom))).asHours());
       const curIndexPlace = this.placesNames.findIndex((elem) => elem === point.destination.name);
-      if (curIndexPlace === -1) {
+      if (curIndexPlace === -1 && duration > 0) {
         this.placesNames.push(point.destination.name);
         this.placesTime.push(duration);
       } else {

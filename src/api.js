@@ -1,5 +1,6 @@
-import ModelPoint from './model-task';
-const Method = {
+import ModelPoint from './model-point';
+
+const HTTPMethod = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
@@ -17,7 +18,6 @@ const checkStatus = (response) => {
 const toJSON = (response) => {
   return response.json();
 };
-
 
 export default class API {
   constructor({endPoint, authorization}) {
@@ -47,9 +47,8 @@ export default class API {
   createPoint({point}) {
     return this._load({
       url: `points`,
-      method: Method.POST,
+      method: HTTPMethod.POST,
       body: JSON.stringify(point),
-      headers: new Headers({'Content-Type': `application/json`})
     })
       .then(toJSON)
       .then(ModelPoint.parsePoint);
@@ -58,19 +57,27 @@ export default class API {
   updatePoint({id, data}) {
     return this._load({
       url: `points/${id}`,
-      method: Method.PUT,
-      body: JSON.stringify(data),
-      headers: new Headers({'Content-Type': `application/json`})
+      method: HTTPMethod.PUT,
+      body: JSON.stringify(data)
     })
       .then(toJSON)
       .then(ModelPoint.parsePoint);
   }
 
   deletePoint({id}) {
-    return this._load({url: `points/${id}`, method: Method.DELETE});
+    return this._load({url: `points/${id}`, method: HTTPMethod.DELETE});
   }
 
-  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
+  syncPoints({points}) {
+    return this._load({
+      url: `points/sync`,
+      method: HTTPMethod.POST,
+      body: JSON.stringify(points)
+    })
+      .then(toJSON);
+  }
+
+  _load({url, method = HTTPMethod.GET, body = null, headers = new Headers({'Content-Type': `application/json`})}) {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})
