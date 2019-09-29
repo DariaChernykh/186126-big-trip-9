@@ -68,6 +68,7 @@ export default class TripController {
           if (this._points.length === 0) {
             this._tripStats.generateCharts(this._points);
           }
+
           this._points.push(newData);
           this._reRender();
         })
