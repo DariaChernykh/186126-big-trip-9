@@ -12,12 +12,31 @@ export default class Information extends AbstractComponent {
     this._points = points.length ? points.slice().sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime()) : points;
   }
   getTemplate() {
-    return this._points.length === 0 ? `<div class="trip-info__main"></div>` :
-      `<div class="trip-info__main">
-      <h1 class="trip-info__title">${this._points[0].destination.name} &mdash; ${this._points.length > 2 ? `${this._points.length > 3 ? `...` : this._points[2].destination.name} &mdash;` : ``} ${this._points[this._points.length - 1].destination.name}</h1>
+    switch (this._points.length) {
+      case 0:
+        return `<div class="trip-info__main"></div>`;
+      case 1:
+        return `<div class="trip-info__main">
+          <h1 class="trip-info__title">${this._points[0].destination.name}</h1>
+          <p class="trip-info__dates">${returnDate(this._points[0].dateFrom, this._points[this._points.length - 1].dateTo)}</p>
+        </div>`;
+      case 2:
+        return `<div class="trip-info__main">
+          <h1 class="trip-info__title">${this._points[0].destination.name} &mdash; ${this._points[this._points.length - 1].destination.name}</h1>
+          <p class="trip-info__dates">${returnDate(this._points[0].dateFrom, this._points[this._points.length - 1].dateTo)}</p>
+        </div>`;
+      case 3:
+        return `<div class="trip-info__main">
+          <h1 class="trip-info__title">${this._points[0].destination.name} &mdash; ${this._points[1].destination.name} &mdash; ${this._points[this._points.length - 1].destination.name}</h1>
+          <p class="trip-info__dates">${returnDate(this._points[0].dateFrom, this._points[this._points.length - 1].dateTo)}</p>
+        </div>`;
+      default:
+        return `<div class="trip-info__main">
+      <h1 class="trip-info__title">${this._points[0].destination.name} &mdash; ... &mdash; ${this._points[this._points.length - 1].destination.name}</h1>
     
       <p class="trip-info__dates">${returnDate(this._points[0].dateFrom, this._points[this._points.length - 1].dateTo)}</p>
-    </div>`.trim();
+    </div>`;
+    }
   }
   update(points) {
     this._points = points.slice().sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());

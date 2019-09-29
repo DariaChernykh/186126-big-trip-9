@@ -1,11 +1,12 @@
 import AbstractComponent from "./abstract-component";
 import flatpickr from "flatpickr";
 import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
-import {checkType, getRandomInt, createActivityChoice, createDestination} from "../utils";
+import {checkType, createActivityChoice, createDestination} from "../utils";
 import {TYPES} from "../data";
+import {getOptions} from "./options";
 
 const possibleTypes = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
-
+const getRandomInt = (min, max) => Math.floor(Math.random() * (max + 1 - min)) + min;
 const createDestinationPoint = (arr) => {
   const point = arr[getRandomInt(0, arr.length - 1)];
   return {
@@ -23,6 +24,7 @@ export default class NewPoint extends AbstractComponent {
     this._type = possibleTypes[getRandomInt(0, possibleTypes.length - 1)];
     this._commonOffers = offers;
     this._avalibleOffers = this._commonOffers.length ? this._commonOffers.find((offer) => offer.type === this._type) : [];
+    this._options = this._avalibleOffers.offers;
     this._destination = createDestinationPoint(this._places);
     this._activity = TYPES.activity;
     this._transfer = TYPES.transfer;
@@ -30,6 +32,7 @@ export default class NewPoint extends AbstractComponent {
     this._onSubmitHandler = this._onSubmitButtonClick.bind(this);
     this._onEscKeyUp = this._onEscUp.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
+    this._onChangeOptions = this._onChangeOptions.bind(this);
   }
 
   onSubmit(fn) {
@@ -83,7 +86,7 @@ export default class NewPoint extends AbstractComponent {
                 <label class="event__label  event__type-output" for="event-destination-1">
                 ${this._type.toUpperCase().slice(0, 1) + this._type.slice(1)} ${checkType(this._type) === `activity` ? `in` : `to`}
                 </label>
-                <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._destination.name}" list="destination-list-1">
+                <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._destination.name}" list="destination-list-1" >
                 <datalist id="destination-list-1">
                   ${createDestination(this._places)}
                 </datalist>
@@ -112,6 +115,15 @@ export default class NewPoint extends AbstractComponent {
               <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
               <button class="event__reset-btn" type="reset">Cancel</button>
             </header>
+            
+          ${this._avalibleOffers.offers.length ? `<section class="event__details">
+            <section class="event__section  event__section--offers">
+              <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+              <div class="event__available-offers">
+                ${getOptions(this._options, `edit`, this._type)}
+              </div>
+            </section>
+        </section>` : ``}
           </form>`;
   }
 
@@ -123,10 +135,8 @@ export default class NewPoint extends AbstractComponent {
   bind() {
     this._element
       .addEventListener(`submit`, this._onSubmitHandler);
-
     this._element.querySelector(`.event__reset-btn`)
       .addEventListener(`click`, this._onEscKeyUp);
-
     document.addEventListener(`keyup`, this._onEscKeyUp);
 
     this._flatpickrDateStart = flatpickr(this._element.querySelector(`#event-start-time-1`), {
@@ -139,26 +149,41 @@ export default class NewPoint extends AbstractComponent {
     });
 
     this._element.querySelector(`.event__type-list`).addEventListener(`click`, this._onChangeType);
+    if (this._element.querySelector(`.event__available-offers`)) {
+      this._element.querySelector(`.event__available-offers`).addEventListener(`click`, this._onChangeOptions);
+    }
   }
 
   unbind() {
     this._flatpickrDateStart.destroy();
     this._element
       .removeEventListener(`submit`, this._onSubmitHandler);
-
     this._element.querySelector(`.event__reset-btn`)
       .removeEventListener(`click`, this._onEscKeyUp);
-
     this._element.querySelector(`.event__type-list`).removeEventListener(`click`, this._onChangeType);
-
     document.removeEventListener(`keyup`, this._onEscKeyUp);
+    if (this._element.querySelector(`.event__available-offers`)) {
+      this._element.querySelector(`.event__available-offers`).removeEventListener(`click`, this._onChangeOptions);
+    }
   }
 
   _onChangeType(el) {
     if (el.target.classList.contains(`event__type-label`)) {
       this._type = el.target.parentElement.querySelector(`.event__type-input`).value;
       this._avalibleOffers = this._commonOffers.length ? this._commonOffers.find((offer) => offer.type === this._type) : [];
+      this._options = this._avalibleOffers.offers;
       this._partialUpdate();
+    }
+  }
+
+  _onChangeOptions(evt) {
+    if (evt.target.classList.contains(`event__offer-label`)) {
+      const title = evt.target.parentElement.querySelector(`.event__offer-title`).textContent;
+      this._options.forEach((option) => {
+        if (option.title === title) {
+          option.accepted = evt.target.checked;
+        }
+      });
     }
   }
 
@@ -170,13 +195,5 @@ export default class NewPoint extends AbstractComponent {
     this._container.replaceChild(this._element, prevElement);
     prevElement.remove();
     this.bind();
-  }
-
-  shake() {
-    const ANIMATION_TIMEOUT = 600;
-    this._element.classList.add(`shake`);
-    setTimeout(() => {
-      this._element.classList.remove(`shake`);
-    }, ANIMATION_TIMEOUT);
   }
 }
