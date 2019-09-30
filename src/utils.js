@@ -7,9 +7,6 @@ export const createElement = (template) => {
 };
 
 export const checkType = (type) => TYPES.transfer.findIndex((elem) => elem === type) >= 0 ? `transfer` : `activity`;
-
-export const getRandomInt = (min, max) => Math.floor(Math.random() * (max + 1 - min)) + min;
-
 export const createActivityChoice = (arr) => {
   return arr.reduce((acc, value) => acc + `<div class="event__type-item">
                   <input id="event-type-${value}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${value}">
@@ -18,3 +15,11 @@ export const createActivityChoice = (arr) => {
 };
 
 export const createDestination = (arr) => arr.reduce((acc, value) => acc + `<option value="${value.name}"></option>`, ``);
+
+export const shake = (element) => {
+  const ANIMATION_TIMEOUT = 600;
+  element.classList.add(`shake`);
+  setTimeout(() => {
+    element.classList.remove(`shake`);
+  }, ANIMATION_TIMEOUT);
+};

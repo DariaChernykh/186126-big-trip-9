@@ -1,11 +1,6 @@
-const checkAcception = (option, pointOption) => {
-  let offer = pointOption.find((val) => option.name === val.title);
-  return offer ? offer.accepted : false;
-};
-
-export const getOptions = (options, mode, pointOptions) => {
-  if (options.length && mode === `short`) {
-    const sortedOptions = options.length <= 3 ? options : options.slice().sort((a, b) => b.accepted - a.accepted).slice(0, 3);
+export const getOptions = (pointOptions, mode, type) => {
+  if (pointOptions.length && mode === `short`) {
+    const sortedOptions = pointOptions.length <= 3 ? pointOptions : pointOptions.slice().sort((a, b) => b.accepted - a.accepted).slice(0, 3);
     return sortedOptions.reduce((acc, val) => {
       if (val.accepted) {
         acc += `<li class="event__offer">
@@ -16,12 +11,12 @@ export const getOptions = (options, mode, pointOptions) => {
       }
       return acc;
     }, ``);
-  } else if (options.offers.length && mode === `edit`) {
-    return options.offers.reduce((acc, val, index) => {
+  } else if (pointOptions.length && mode === `edit`) {
+    return pointOptions.reduce((acc, val, index) => {
       acc += `
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${options.type}-${index}" type="checkbox" name="event-offer-${options.type}-${index}" ${checkAcception(val, pointOptions) ? `checked` : ``}>
-        <label class="event__offer-label" for="event-offer-${options.type}-${index}">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${index}" type="checkbox" name="event-offer-${type}-${index}" ${val.accepted ? `checked` : ``}>
+        <label class="event__offer-label" for="event-offer-${type}-${index}">
           <span class="event__offer-title">${val.title}</span>
           &plus;
           &euro;&nbsp;<span class="event__offer-price">${val.price}</span>

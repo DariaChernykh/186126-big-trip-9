@@ -2,6 +2,7 @@ import Card from "../components/card";
 import CardEdit from "../components/card-edit";
 import ModelPoint from "../model-point";
 import moment from "moment";
+import {shake} from "../utils";
 
 export default class PointController {
   constructor(container, point, offers, places, api, onDataChange, onChangeView) {
@@ -9,7 +10,6 @@ export default class PointController {
     this._point = point;
     this._offers = offers;
     this._places = places;
-    this._api = api;
     this._onChangeView = onChangeView;
     this._onDataChange = onDataChange;
     this._taskComponent = new Card(this._point, this._offers);
@@ -95,7 +95,7 @@ export default class PointController {
           pointEditComponent.unbind();
         })
         .catch(() => {
-          pointEditComponent.shake();
+          shake(pointEditComponent.getElement());
           form.style = `border: 2px solid red`;
           this._commonUnBlocking(`delete`);
         });
@@ -113,12 +113,13 @@ export default class PointController {
       const formData = new FormData(form);
       const getFormOptions = () => {
         const options = pointEditComponent.getElement().querySelectorAll(`.event__offer-selector`);
+        const currentOptions = pointEditComponent._options;
         pointEditComponent._options = [];
         [...options].forEach((option, index) => {
           const accepted = option.querySelector(`.event__offer-checkbox`).checked;
           pointEditComponent._options.push({
-            title: pointEditComponent._avalibleOffers.offers[index].name,
-            price: pointEditComponent._avalibleOffers.offers[index].price,
+            title: currentOptions[index].title,
+            price: currentOptions[index].price,
             accepted
           });
         });
@@ -127,6 +128,10 @@ export default class PointController {
 
       const dateFrom = moment(formData.get(`event-start-time`).slice(0, 16));
       const dateTo = moment(formData.get(`event-start-time`).slice(19));
+      const checkName = this._places.find((el) => {
+        return el.name === formData.get(`event-destination`);
+      });
+
       const entry = {
         id: pointEditComponent._id,
         type: pointEditComponent._type,
@@ -137,22 +142,27 @@ export default class PointController {
         dateTo: dateTo.format(),
         duration: dateTo.millisecond() - dateFrom.millisecond(),
         destination: {
-          name: formData.get(`event-destination`),
+          name: checkName ? formData.get(`event-destination`) : ``,
           pictures: pointEditComponent._destination.pictures,
           description: pointEditComponent._destination.description
         },
       };
-
       this._commonBlocking(`save`);
 
       load(true)
         .then(() => {
-          this._commonUnBlocking(`save`);
-          this._onDataChange(new ModelPoint(ModelPoint.toRAW(entry)), this._point);
-          pointEditComponent.unbind();
+          if (entry.destination.name) {
+            this._commonUnBlocking(`save`);
+            this._onDataChange(new ModelPoint(ModelPoint.toRAW(entry)), this._point);
+            pointEditComponent.unbind();
+          } else {
+            shake(pointEditComponent.getElement());
+            form.style = `border: 2px solid red`;
+            this._commonUnBlocking(`save`);
+          }
         })
         .catch(() => {
-          pointEditComponent.shake();
+          shake(pointEditComponent.getElement());
           form.style = `border: 2px solid red`;
           this._commonUnBlocking(`save`);
         });

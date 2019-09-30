@@ -40,6 +40,7 @@ export default class CardEdit extends AbstractComponent {
     this._onDeleteHandler = this._onDeleteClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
     this._onChangePoint = this._onChangePoint.bind(this);
+    this._onChangeOptions = this._onChangeOptions.bind(this);
   }
 
   onSubmit(fn) {
@@ -115,12 +116,12 @@ export default class CardEdit extends AbstractComponent {
             <label class="visually-hidden" for="event-start-time-${this._id}">
               From
             </label>
-             <input class="event__input  event__input--time" id="event-start-time-${this._id}" type="text" name="event-start-time" required />
+             <input class="event__input  event__input--time" id="event-start-time-${this._id}" type="text" name="event-start-time" required readonly />
             &mdash;
             <label class="visually-hidden" for="event-end-time-${this._id}">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-${this._id}" type="text" name="event-end-time" required />
+            <input class="event__input  event__input--time" id="event-end-time-${this._id}" type="text" name="event-end-time" required readonly />
           </div>
     
           <div class="event__field-group  event__field-group--price">
@@ -152,12 +153,12 @@ export default class CardEdit extends AbstractComponent {
           <section class="event__section  event__section--offers">
           ${this._avalibleOffers.offers.length ? `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
-              ${this._options.length ? getOptions(this._avalibleOffers, `edit`, this._options) : ``}
+              ${getOptions(this._options, `edit`, this._type)}
             </div>` : ``}
             
           </section>
-    
-          <section class="event__section  event__section--destination">
+    ${this._places.find((el) => el.name === this._destination.name) ?
+    `<section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
             <p class="event__destination-description">${this._destination.description}</p>
     
@@ -166,7 +167,7 @@ export default class CardEdit extends AbstractComponent {
                 ${createPhotoElements(this._destination.pictures)}
               </div>
             </div>
-          </section>
+          </section>` : ``}
         </section>
       </form>
     </li>`.trim();
@@ -208,6 +209,9 @@ export default class CardEdit extends AbstractComponent {
 
     this._element.querySelector(`.event__type-list`).addEventListener(`click`, this._onChangeType);
     this._element.querySelector(`.event__input--destination`).addEventListener(`change`, this._onChangePoint);
+    if (this._element.querySelector(`.event__available-offers`)) {
+      this._element.querySelector(`.event__available-offers`).addEventListener(`click`, this._onChangeOptions);
+    }
   }
 
   unbind() {
@@ -223,14 +227,28 @@ export default class CardEdit extends AbstractComponent {
 
     this._element.querySelector(`.event__type-list`).removeEventListener(`click`, this._onChangeType);
     this._element.querySelector(`.event__input--destination`).removeEventListener(`change`, this._onChangePoint);
+    if (this._element.querySelector(`.event__available-offers`)) {
+      this._element.querySelector(`.event__available-offers`).removeEventListener(`click`, this._onChangeOptions);
+    }
 
     document.removeEventListener(`keyup`, this._onEscKeyUp);
   }
 
   _onChangeType(el) {
     if (el.target.classList.contains(`event__type-label`)) {
+      this._options = [];
+
       this._type = el.target.parentElement.querySelector(`.event__type-input`).value;
       this._avalibleOffers = this._commonOffers.length ? this._commonOffers.find((offer) => offer.type === this._type) : [];
+      if (this._avalibleOffers.offers.length) {
+        this._avalibleOffers.offers.forEach((option) => {
+          this._options.push({
+            title: option.title,
+            price: option.price,
+            accepted: false,
+          });
+        });
+      }
       this._partialUpdate();
     }
   }
@@ -251,6 +269,17 @@ export default class CardEdit extends AbstractComponent {
     }
   }
 
+  _onChangeOptions(evt) {
+    if (evt.target.classList.contains(`event__offer-label`)) {
+      const title = evt.target.parentElement.querySelector(`.event__offer-title`).textContent;
+      this._options.forEach((option) => {
+        if (option.title === title) {
+          option.accepted = evt.target.checked;
+        }
+      });
+    }
+  }
+
   _partialUpdate() {
     this.unbind();
     const prevElement = this._element;
@@ -259,13 +288,5 @@ export default class CardEdit extends AbstractComponent {
     this._container.replaceChild(this._element, prevElement);
     prevElement.remove();
     this.bind();
-  }
-
-  shake() {
-    const ANIMATION_TIMEOUT = 600;
-    this._element.classList.add(`shake`);
-    setTimeout(() => {
-      this._element.classList.remove(`shake`);
-    }, ANIMATION_TIMEOUT);
   }
 }

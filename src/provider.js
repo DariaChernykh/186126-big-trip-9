@@ -1,11 +1,9 @@
 import ModelPoint from './model-point';
-// import {getEventEmpty} from './data/event';
 
 export default class Provider {
   constructor(api, store) {
     this._api = api;
     this._store = store;
-    this._id = Date.now();
   }
 
   _isOnline() {
@@ -14,11 +12,6 @@ export default class Provider {
 
   static objectToArray(object) {
     return Object.keys(object).map((id) => object[id]);
-  }
-
-  getNewPoint() {
-    // return ModelPoint.parsePoint({'destination': ``, 'date_from': Date.now(), 'date_to': Date.now()});
-    // return getEventEmpty();
   }
 
   getDestinations() {
@@ -53,7 +46,7 @@ export default class Provider {
           return point;
         });
     } else {
-      data.id = this._id;
+      this._id = data.id;
       this._needSync = true;
 
       this._store.setItem(data.id, data);

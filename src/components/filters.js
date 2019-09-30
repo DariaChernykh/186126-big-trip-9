@@ -3,9 +3,6 @@ import AbstractComponent from "./abstract-component";
 const FILTERS = [`everything`, `future`, `past`];
 
 export default class Filters extends AbstractComponent {
-  constructor() {
-    super();
-  }
   getTemplate() {
     return `<form class="trip-filters" action="#" method="get">
   ${FILTERS.reduce((acc, filter) => {
