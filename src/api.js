@@ -54,11 +54,11 @@ export default class API {
       .then(ModelPoint.parsePoint);
   }
 
-  updatePoint({id, data}) {
+  updatePoint({id, newPoint}) {
     return this._load({
       url: `points/${id}`,
       method: HTTPMethod.PUT,
-      body: JSON.stringify(data)
+      body: JSON.stringify(newPoint)
     })
       .then(toJSON)
       .then(ModelPoint.parsePoint);

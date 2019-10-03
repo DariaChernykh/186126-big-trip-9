@@ -48,7 +48,7 @@ export default class Card extends AbstractComponent {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${this._type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${this._type.toUpperCase().slice(0, 1) + this._type.slice(1)} ${checkType(this._type) === `activity` ? `in` : `to`} ${this._destination.name}</h3>
+        <h3 class="event__title">${this._type.toUpperCase().slice(0, 1)}${this._type.slice(1)} ${checkType(this._type) === `activity` ? `in` : `to`} ${this._destination.name}</h3>
     
         <div class="event__schedule">
           <p class="event__time">

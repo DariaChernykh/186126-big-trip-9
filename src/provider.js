@@ -30,40 +30,40 @@ export default class Provider {
           return points;
         });
     } else {
-      const rawPointsMap = this._store.getAll();
-      const rawPoints = Provider.objectToArray(rawPointsMap);
+      const rawPointsInitial = this._store.getAll();
+      const rawPoints = Provider.objectToArray(rawPointsInitial);
       const points = ModelPoint.parsePoints(rawPoints);
 
       return Promise.resolve(points);
     }
   }
 
-  createPoint({data}) {
+  createPoint({newPoint}) {
     if (this._isOnline()) {
-      return this._api.createPoint({point: data})
+      return this._api.createPoint({point: newPoint})
         .then((point) => {
           this._store.setItem(point.id, point.toRAW());
           return point;
         });
     } else {
-      this._id = data.id;
+      this._id = newPoint.id;
       this._needSync = true;
 
-      this._store.setItem(data.id, data);
-      return Promise.resolve(ModelPoint.parsePoint(data));
+      this._store.setItem(newPoint.id, newPoint);
+      return Promise.resolve(ModelPoint.parsePoint(newPoint));
     }
   }
 
 
-  updatePoint({id, data}) {
+  updatePoint({id, newPoint}) {
     if (this._isOnline()) {
-      return this._api.updatePoint({id, data})
+      return this._api.updatePoint({id, newPoint})
         .then((point) => {
           this._store.setItem(point.id, point.toRAW());
           return point;
         });
     } else {
-      const point = data;
+      const point = newPoint;
       this._needSync = true;
       this._store.setItem(point.id, point);
       return Promise.resolve(ModelPoint.parsePoint(point));

@@ -12,7 +12,7 @@ const MAIN_CONTAINER = document.querySelector(`.trip-events`);
 const CONTAINER = document.querySelector(`.page-body__container-content`);
 const addPointBtn = document.querySelector(`.trip-main__event-add-btn`);
 
-const AUTHORIZATION = `Basic kTy9gIdsz2317rD`;
+const AUTHORIZATION = `Basic kTy9gIdsz2317rD12`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip`;
 const OFFLINE_TITLE = ` [OFFLINE]`;
 const STORE_KEY = `store-key-big-trip-v.1`;

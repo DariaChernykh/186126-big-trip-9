@@ -67,7 +67,7 @@ export default class Stats extends AbstractComponent {
     }
 
     arr.forEach((point) => {
-      let curIndex = this.labels.findIndex((elem) => elem === point.type);
+      const curIndex = this.labels.findIndex((elem) => elem === point.type);
       if (curIndex === -1) {
         this.labels.push(point.type);
         this.prices.push(point.price);

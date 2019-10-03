@@ -63,7 +63,7 @@ export default class TripController {
         });
 
     } else if (oldData === null) {
-      this._api.createPoint({data: newData.toRAW()})
+      this._api.createPoint({newPoint: newData.toRAW()})
         .then(() => {
           if (this._points.length === 0) {
             this._tripStats.generateCharts(this._points);
@@ -77,7 +77,7 @@ export default class TripController {
         });
 
     } else {
-      this._api.updatePoint({id: newData.id, data: newData.toRAW()})
+      this._api.updatePoint({id: newData.id, newPoint: newData.toRAW()})
         .then(() => {
           this._points[this._points.findIndex((it) => it === oldData)] = newData;
           this._reRender();
@@ -118,7 +118,7 @@ export default class TripController {
     });
 
     listUniqDays.sort((a, b) => new Date(a).getTime() - new Date(b).getTime()).forEach((val, index) => {
-      let day = new Day(index + 1, val);
+      const day = new Day(index + 1, val);
       this._daysContainer.getElement().appendChild(day.getElement());
     });
 
@@ -261,7 +261,7 @@ export default class TripController {
   }
 
   _createOneDay() {
-    let day = new Day(0, 0);
+    const day = new Day(0, 0);
     this._daysContainer.getElement().appendChild(day.getElement());
     return this._daysContainer.getElement().querySelector(`.trip-events__list`);
   }
