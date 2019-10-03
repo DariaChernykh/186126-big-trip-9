@@ -1,4 +1,4 @@
 export const TYPES = {
-  'transfer': [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
-  'activity': [`restaurant`, `sightseeing`, `check-in`]
+  'transfers': [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
+  'activities': [`restaurant`, `sightseeing`, `check-in`]
 };

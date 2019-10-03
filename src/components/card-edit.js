@@ -33,6 +33,8 @@ export default class CardEdit extends AbstractComponent {
     this._commonOffers = offers;
     this._avalibleOffers = this._commonOffers.length ? this._commonOffers.find((offer) => offer.type === this._type) : [];
     this._places = places;
+    this._activities = TYPES.activities;
+    this._transfers = TYPES.transfers;
 
     this._onEdit = null;
     this._onSubmitHandler = this._onSubmitButtonClick.bind(this);
@@ -92,12 +94,12 @@ export default class CardEdit extends AbstractComponent {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-                ${createActivityChoice(TYPES.transfer)}
+                ${createActivityChoice(this._transfers)}
               </fieldset>
     
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
-                ${createActivityChoice(TYPES.activity)}
+                ${createActivityChoice(this._activities)}
               </fieldset>
             </div>
           </div>

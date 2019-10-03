@@ -6,7 +6,7 @@ export const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export const checkType = (type) => TYPES.transfer.findIndex((elem) => elem === type) >= 0 ? `transfer` : `activity`;
+export const checkType = (type) => TYPES.transfers.findIndex((elem) => elem === type) >= 0 ? `transfer` : `activity`;
 export const createActivityChoice = (arr) => {
   return arr.reduce((acc, value) => acc + `<div class="event__type-item">
                   <input id="event-type-${value}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${value}">

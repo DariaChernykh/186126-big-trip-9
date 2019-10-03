@@ -26,8 +26,8 @@ export default class NewPoint extends AbstractComponent {
     this._avalibleOffers = this._commonOffers.length ? this._commonOffers.find((offer) => offer.type === this._type) : [];
     this._options = this._avalibleOffers.offers;
     this._destination = createDestinationPoint(this._places);
-    this._activity = TYPES.activity;
-    this._transfer = TYPES.transfer;
+    this._activities = TYPES.activities;
+    this._transfers = TYPES.transfers;
 
     this._onSubmitHandler = this._onSubmitButtonClick.bind(this);
     this._onEscKeyUp = this._onEscUp.bind(this);
@@ -72,12 +72,12 @@ export default class NewPoint extends AbstractComponent {
                 <div class="event__type-list">
                   <fieldset class="event__type-group">
                     <legend class="visually-hidden">Transfer</legend>
-                    ${createActivityChoice(this._transfer)}
+                    ${createActivityChoice(this._transfers)}
                   </fieldset>
         
                   <fieldset class="event__type-group">
                     <legend class="visually-hidden">Activity</legend>
-                    ${createActivityChoice(this._activity)}
+                    ${createActivityChoice(this._activities)}
                   </fieldset>
                 </div>
               </div>

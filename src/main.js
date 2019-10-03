@@ -10,7 +10,7 @@ import Provider from "./provider";
 const HEADER_CONTROLS = document.querySelector(`.trip-controls`);
 const MAIN_CONTAINER = document.querySelector(`.trip-events`);
 const CONTAINER = document.querySelector(`.page-body__container-content`);
-const addPointBtn = document.querySelector(`.trip-main__event-add-btn`);
+const ADD_POINT_BTN = document.querySelector(`.trip-main__event-add-btn`);
 
 const AUTHORIZATION = `Basic kTy9gIdsz2317rD12`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip`;
@@ -36,7 +36,7 @@ const arrPlaces = [];
 const arrOffers = [];
 
 MAIN_CONTAINER.appendChild(noPoint.render());
-addPointBtn.disabled = true;
+ADD_POINT_BTN.disabled = true;
 
 provider.getDestinations()
   .then((places) => {
@@ -53,7 +53,7 @@ provider.getDestinations()
     const filters = new Filters();
 
     MAIN_CONTAINER.removeChild(noPoint._element);
-    addPointBtn.disabled = false;
+    ADD_POINT_BTN.disabled = false;
     HEADER_CONTROLS.appendChild(menu.getElement());
     HEADER_CONTROLS.appendChild(filters.getElement());
 

@@ -2,7 +2,9 @@ import AbstractComponent from "./abstract-component";
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import moment from "moment";
-const transfer = [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`];
+import {TYPES} from "../data";
+
+const transfers = TYPES.transfers;
 
 export default class Stats extends AbstractComponent {
   constructor() {
@@ -84,7 +86,7 @@ export default class Stats extends AbstractComponent {
         this.placesTime[curIndexPlace] += duration;
       }
 
-      if (transfer.indexOf(point.type) >= 0) {
+      if (transfers.indexOf(point.type) >= 0) {
         if (!this.transport.hasOwnProperty(point.type)) {
           this.transport[point.type] = 1;
         } else {
